@@ -1,0 +1,37 @@
+\section{Desenvolvendo com containers}
+
+\subsection{Iniciando o ambiente de desenvolvimento com Docker Compose}
+
+Para iniciar um projeto existente com Docker, basta clonar o repositório e utilizar o Docker Compose:
+
+\begin{verbatim}
+git clone https://github.com/docker/getting-started-todo-app
+docker compose watch
+\end{verbatim}
+
+Ao inicializar a aplicação, vários containers são criados, cada um servindo uma função específica:
+
+\begin{itemize}
+    \item \textbf{React frontend}: um container Node rodando o servidor de desenvolvimento React, usando Vite.
+    \item \textbf{Node backend}: o backend provê uma API que permite retirar, criar e deletar itens de tarefas.
+    \item \textbf{MySQL database}: o banco de dados para armazenar a lista de itens.
+    \item \textbf{phpMyAdmin}: uma interface web para interagir com o banco de dados, acessível em \texttt{http://db.localhost}.
+    \item \textbf{Traefik proxy}: uma aplicação proxy que direciona \textit{requests} para o serviço correto. Ela redireciona requisições para \texttt{localhost/api/*} ao backend, requisições para \texttt{localhost/*} ao frontend, e requisições para \texttt{db.localhost} ao phpMyAdmin. Isso permite acessar todas as aplicações pela porta 80, ao invés de usar portas diferentes para cada serviço.
+\end{itemize}
+
+\subsection{Fazendo mudanças no serviço}
+
+É possível alterar diversos aspectos da aplicação diretamente nos arquivos do projeto:
+
+\begin{itemize}
+    \item \textbf{Greeting}: populado pela chamada à API em \texttt{/api/greeting}, alterável em \texttt{backend/src/routes/getGreeting.js}.
+    \item \textbf{Placeholder text}: alterável no atributo \textit{placeholder} do componente \texttt{Form.Control} em \texttt{client/src/components/AddNewItemForm.jsx}.
+    \item \textbf{Cor de fundo}: alterável pelo valor da chave \texttt{background-color} em \texttt{client/src/index.css}.
+\end{itemize}
+
+\subsection{Vantagens do ambiente containerizado}
+
+Foi possível iniciar um ambiente de desenvolvimento completo sem nenhuma instalação ou configuração prévia de dependências. O ambiente de containers proveu tudo o que era necessário para o desenvolvimento, sem a necessidade de instalar Node, MySQL ou qualquer outra dependência na máquina local --- apenas o Docker e um editor de código.
+
+Além disso, as mudanças realizadas nos arquivos locais são automaticamente sincronizadas com os containers, pois os arquivos do diretório de projeto local são compartilhados com o ambiente do container. Os processos em execução monitoram e respondem a alterações nos arquivos em tempo real.
+

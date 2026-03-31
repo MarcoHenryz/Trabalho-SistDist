@@ -1,0 +1,26 @@
+\section{Instalação}
+
+O Docker Desktop está disponível para Mac, Windows e Linux. No Linux, o Docker provê pacotes \texttt{.deb} e \texttt{.rpm} para as seguintes distribuições e arquiteturas: Ubuntu, Debian, Red Hat e Fedora. Existe uma versão experimental para distribuições baseadas em Arch, porém o Docker não testou nem verificou a instalação nessas distribuições.
+
+\subsection{Requisitos do sistema}
+
+Para executar o Docker Desktop no Linux, são necessários os seguintes requisitos:
+
+\begin{itemize}
+    \item Kernel 64-bit e suporte a virtualização pela CPU
+    \item Suporte a KVM para virtualização
+    \item QEMU 5.2 ou superior (recomenda-se a versão mais recente)
+    \item Sistema de inicialização \texttt{systemd}
+    \item 4 GB de RAM
+\end{itemize}
+
+Vale ressaltar que o Docker Desktop no Linux roda uma máquina virtual.
+
+\subsection{Instalação no Ubuntu}
+
+Para instalar o Docker Desktop no Ubuntu, basta baixar o pacote mais recente e executar os seguintes comandos:
+
+\begin{verbatim}
+sudo apt-get update
+sudo apt install ./docker-desktop-amd64.deb
+\end{verbatim}

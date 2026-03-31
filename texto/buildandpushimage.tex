@@ -1,0 +1,50 @@
+\section{Build e push da primeira image}
+
+\subsection{Docker Hub}
+
+Para compartilhar Docker images, é necessário um local para armazená-las. Nesse contexto entra o registro. Existem vários registros, mas o Docker Hub é o registro padrão para images. O Docker Hub provê tanto um local para armazenar images próprias quanto para encontrar images de outros usuários.
+
+Ao escolher images, o Docker Hub fornece duas categorias de images confiáveis:
+
+\begin{itemize}
+    \item \textbf{Docker Official Images (DOI)}: images selecionadas dos softwares mais populares, seguindo boas práticas e atualizadas regularmente.
+    \item \textbf{Docker Hardened Images (DHI)}: images desenhadas para reduzir a superfície de ataque --- seguras, simples e praticamente sem vulnerabilidades.
+\end{itemize}
+
+Para subir images no Docker Hub, é necessário ter uma conta Docker.
+
+\subsection{Criando um repositório}
+
+Para criar um repositório no Docker Hub, acessa-se o site, seleciona-se a opção de criar repositório e preenche-se as informações necessárias, como o nome do repositório, uma descrição e a visibilidade (pública ou privada).
+
+\subsection{Conceitos fundamentais}
+
+Uma \textbf{image} é um pacote único que contém tudo o que é necessário para rodar um processo. Qualquer máquina que rodar o container usando a image está apta a rodar a aplicação sem precisar instalar nada previamente.
+
+Um \textbf{Dockerfile} é um script que provê o conjunto de instruções de como buildar a image.
+
+\subsection{Comandos de build e push}
+
+Primeiramente, é necessário fazer login no Docker Hub pelo terminal:
+
+\begin{verbatim}
+docker login
+\end{verbatim}
+
+Para buildar a image:
+
+\begin{verbatim}
+docker build -t <DOCKER_USERNAME>/getting-started-todo-app .
+\end{verbatim}
+
+Para verificar se a image existe localmente:
+
+\begin{verbatim}
+docker image ls
+\end{verbatim}
+
+Para subir a image para o Docker Hub:
+
+\begin{verbatim}
+docker push <DOCKER_USERNAME>/getting-started-todo-app
+\end{verbatim}
