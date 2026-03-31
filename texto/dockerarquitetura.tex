@@ -1,0 +1,54 @@
+\section{Arquitetura Docker}
+
+O Docker usa uma arquitetura cliente-servidor. O \textit{Docker client} comunica-se com o \textit{Docker daemon}, que executa o trabalho de \textit{build}, execução e distribuição dos Docker containers. O \textit{Docker daemon} pode estar no mesmo sistema ou em um sistema remoto. A comunicação ocorre por meio de uma REST API, usando UNIX \textit{sockets} ou uma interface de rede. Outro cliente Docker é o Docker Compose, que permite trabalhar com aplicações que utilizam vários containers.
+
+\subsection{Docker Daemon}
+
+O Docker daemon (\texttt{dockerd}) escuta os \textit{requests} da Docker API e gerencia os objetos Docker como imagens, containers, \textit{networks} e volumes. Um daemon também pode se comunicar com outros daemons para gerenciar serviços do Docker.
+
+\subsection{Docker Client}
+
+O Docker client (\texttt{docker}) é a maneira primária de interagir com o Docker. Quando se utiliza comandos como \texttt{docker run}, o cliente envia os comandos para o \texttt{dockerd}, que então os processa. O comando \texttt{docker} utiliza a Docker API, e o cliente pode se comunicar com mais de um daemon.
+
+\subsection{Docker Desktop}
+
+Docker Desktop é uma aplicação para Mac, Windows ou Linux que permite buildar e compartilhar aplicações e microserviços em containers. Ele inclui o Docker daemon (\texttt{dockerd}), o Docker client (\texttt{docker}), Docker Compose, Docker Content Trust, Kubernetes e Credential Helper.
+
+\subsection{Docker Registries}
+
+Docker \textit{registries} armazenam Docker images. O Docker Hub é um registro público que todos podem utilizar, e o Docker procura por imagens no Docker Hub por padrão. É possível também manter repositórios privados. Ao utilizar os comandos \texttt{docker pull} ou \texttt{docker run}, o Docker obtém imagens do registro configurado. Com o \texttt{docker push}, o Docker envia a imagem para o repositório configurado.
+
+\subsection{Docker Objects}
+
+Ao usar o Docker, trabalha-se com imagens, containers, \textit{networks}, volumes, \textit{plugins} e outros objetos.
+
+\subsubsection{Images}
+
+Uma \textit{image} é um \textit{template} com instruções para criar um Docker container. Muitas vezes, uma image é baseada em outra, com customizações adicionais. Por exemplo, é possível criar uma \textit{build} baseada na imagem do Ubuntu que inclui o Apache Web Server e a aplicação desejada.
+
+Para criar uma imagem própria, cria-se um \textbf{Dockerfile} com a sintaxe que define os passos necessários para gerar a image. Cada instrução do Dockerfile cria uma camada na image. Ao alterar o Dockerfile e refazer a \textit{build}, somente as camadas modificadas são reconstruídas. Isso é parte do que torna as images leves, pequenas e rápidas quando comparadas com serviços de virtualização.
+
+\subsubsection{Containers}
+
+Um container é uma instância em execução de uma image. É possível criar, iniciar, parar, mover ou deletar um container usando a Docker API ou CLI. Um container pode ser conectado a uma ou mais \textit{networks}, receber armazenamento ou até servir de base para criar uma nova image a partir de seu estado atual.
+
+Por padrão, um container é bem isolado de outros containers e da máquina \textit{host}, mas é possível controlar o nível de isolamento da \textit{network}, armazenamento ou outros subsistemas. Um container é definido por sua imagem e pelas opções de configuração fornecidas em sua criação. Quando um container é removido, qualquer mudança em seu estado que não foi armazenada de forma permanente desaparece.
+
+\subsection{Exemplo: comando \texttt{docker run}}
+
+O comando a seguir executa um container Ubuntu, conecta-se interativamente à sessão local de linha de comando e executa \texttt{/bin/bash}:
+
+\begin{verbatim}
+docker run -i -t ubuntu /bin/bash
+\end{verbatim}
+
+Ao executar este comando (assumindo a configuração padrão de registro), ocorre a seguinte sequência:
+
+\begin{enumerate}
+    \item Se a imagem \texttt{ubuntu} não existir localmente, o Docker a obtém do registro configurado, como se o comando \texttt{docker pull ubuntu} tivesse sido executado manualmente.
+    \item O Docker cria um novo container.
+    \item O Docker aloca um sistema de arquivos de leitura e escrita ao container, como sua camada final, permitindo que o container crie ou modifique arquivos e diretórios em seu sistema de arquivos local.
+    \item O Docker cria uma interface de rede para conectar o container à rede padrão, incluindo a atribuição de um endereço IP. Por padrão, containers podem se conectar a redes externas usando a conexão de rede da máquina \textit{host}.
+    \item O Docker inicia o container e executa \texttt{/bin/bash}. Como o container roda interativamente e conectado ao terminal (devido às \textit{flags} \texttt{-i} e \texttt{-t}), é possível fornecer entrada pelo teclado enquanto o Docker registra a saída no terminal.
+    \item Ao executar \texttt{exit} para encerrar o \texttt{/bin/bash}, o container para mas não é removido. É possível iniciá-lo novamente ou removê-lo.
+\end{enumerate}

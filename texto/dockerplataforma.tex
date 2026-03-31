@@ -1,0 +1,27 @@
+\section{Plataforma Docker}
+
+Docker é uma plataforma aberta para desenvolvimento, envio e execução de aplicações. Ele permite a separação da aplicação de sua infraestrutura, possibilitando o desenvolvimento de software de forma mais rápida. Com o Docker, é possível controlar a infraestrutura de uma aplicação da mesma maneira que se maneja a aplicação em si.
+
+\subsection{Containers}
+
+O Docker viabiliza a habilidade de empacotar e rodar uma aplicação em um ambiente isolado chamado \textit{container}. O isolamento e a segurança proporcionados permitem rodar vários containers simultaneamente. Containers são leves e contêm tudo o que é necessário para rodar uma aplicação, eliminando a preocupação com o que está instalado no \textit{host}. Além disso, é possível compartilhar containers durante o trabalho colaborativo.
+
+O Docker provê ferramentas e uma plataforma para gerenciar os containers, seguindo o fluxo:
+
+\begin{enumerate}
+    \item Desenvolver a aplicação e seus componentes de suporte usando containers.
+    \item O container se torna a unidade para distribuição e teste da aplicação.
+    \item Quando estiver pronto, implanta-se a aplicação em um ambiente de produção, seja como um container ou como um serviço.
+\end{enumerate}
+
+\subsection{Ciclo de desenvolvimento}
+
+O Docker permite o seguinte ciclo de trabalho: o desenvolvedor faz o código localmente e compartilha o trabalho com os colegas usando Docker containers. Os colegas usam o Docker para subir as aplicações em um ambiente de teste, rodando testes manuais e automáticos. Quando um desenvolvedor encontra \textit{bugs}, ele pode corrigi-los no ambiente de desenvolvimento e reenviar as atualizações para o ambiente de teste e validação. Quando o teste é concluído, passar a aplicação corrigida para o cliente é simplesmente subir a imagem atualizada para o ambiente de produção.
+
+A plataforma baseada em containers do Docker é excelente para a interoperabilidade, pois os containers podem ser rodados no ambiente local do desenvolvedor, em máquinas físicas, máquinas virtuais em um \textit{data center}, na nuvem, entre outros ambientes.
+
+\subsection{Eficiência de recursos}
+
+O Docker é leve e rápido, provendo um bom custo-benefício quando comparado com máquinas virtuais baseadas em \textit{hypervisor}. Docker se destaca quando se precisa fazer mais com menos recursos de hardware.
+
+
