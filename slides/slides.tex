@@ -1,93 +1,37 @@
 \documentclass{beamer}
-%\usepackage{bookman} % importa a bookman family font para
-%ser usado na apresentação
 
-\title{Titulo}
-\subtitle{Algum subtítulo}
-\author[Marco, DKM]{Marco Henry\inst{1} \and Danilo Kotaka\inst{2}}
+\title{Docker}
+\subtitle{Plataforma de Conteinerização}
+\author[Marco, DKM]{Marco Antônio Cottorelo Henry\inst{1} \and Danilo Kotaka Marana\inst{2}}
 \institute[UEL]{Universidade Estadual De Londrina}
 \date{\today}
+
+\usetheme{Madrid}
 
 \AtBeginSection[]
 {
   \begin{frame}
     \frametitle{Sumário}
-    \tableofcontents
+    \tableofcontents[currentsection]
   \end{frame}
 }
-
-\usetheme{Madrid}
-%\usecolortheme{}
-%\usefonttheme{structuresmallcapsserif}
 
 \begin{document}
 
   \frame{\titlepage}
 
   \begin{frame}
-    \frametitle{Titulo Slide}
-    This is some text in the first slide. This is some text in the first slide. 
-    This is some text in the first slide.
+    \frametitle{Sumário}
+    \tableofcontents
   \end{frame}
 
-  \begin{frame} % frame com animacao de aparecer, um item aparece por slide
-    \frametitle{Titulo Slide 2} 
-    This is a text in second frame.
-    For the sake of showing an example.
+  \input{s-introducao}
+  \input{s-dockerplataforma}
+  % \input{s-sobredocker}
+  % \input{s-dockerinstalacao}
+  % \input{s-dockerprimeirocontainer}
+  % \input{s-dockerarquitetura}
+  % \input{s-dockerdesenvolvendocontainers}
+  % \input{s-buildandpushimage}
 
-    \begin{itemize}
-      \item<1-> Text visible on slide 1
-      \item<2-> Text visible on slide 2
-      \item<3> Text visible on slide 3
-      \item<4-> Text visible on slide 4
-      
-    \end{itemize}
-  \end{frame}
-
-  \begin{frame}
-    \frametitle{Teste do pause}
-    In this slide \pause
-
-    the text will be partially visible \pause
-
-    And finally everything will be there
-  \end{frame}
-
-  \begin{frame}
-    \frametitle{Teste de highlighting}
-
-    In this slide, some important text will be \alert{highlighted} because it's important.
-    Please, don't abuse it.
-
-    \begin{block}{Remark}
-      Some text 
-    \end{block}
-
-    \begin{alertblock}{Important theorem}
-     Some text in red box 
-    \end{alertblock}
-
-    \begin{examples}
-      Alguns textos em caixe verde. O titulo da caixa é examples 
-    \end{examples}
-    
-  \end{frame}
-
-  \begin{frame}
-    \frametitle{Slide com 2 colunas}
-    \begin{columns}
-      \column{0.5\textwidth}
-      This is a text in the first column
-      \begin{itemize}
-        \item First item
-        \item Second Item
-      \end{itemize}
-
-      \column{0.5\textwidth}
-      This text will be in the second column
-      and on a second thoughts, this is a nice looking layout in some cases
-    \end{columns}
-    
-  \end{frame}
-  
 \end{document}
