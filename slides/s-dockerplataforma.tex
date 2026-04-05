@@ -8,8 +8,8 @@
 
   \vspace{0.5em}
   \begin{itemize}
-    \item<2-> Separa a aplicação de sua infraestrutura
-    \item<3-> Permite desenvolver software de forma mais rápida
+    \item Separa a aplicação de sua infraestrutura
+    \item Permite desenvolver software de forma mais rápida
   \end{itemize}
 \end{frame}
 
@@ -22,9 +22,9 @@
 
   \vspace{0.5em}
   \begin{itemize}
-    \item<2-> Vários containers rodando simultaneamente com segurança
-    \item<3-> Leves e portáveis
-    \item<4-> Fáceis de compartilhar em equipe
+    \item Vários containers rodando simultaneamente com segurança
+    \item Leves e portáveis
+    \item Fáceis de compartilhar em equipe
   \end{itemize}
 \end{frame}
 
@@ -38,4 +38,31 @@
     \item<3-> O container vira a unidade de \textbf{distribuição e teste}
     \item<4-> \textbf{Implantar} em produção como container ou serviço
   \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Ciclo de Desenvolvimento}
+  \begin{columns}
+    \column{0.5\textwidth}
+    \textbf{Desenvolvimento}
+    \begin{itemize}
+      \item Código local em containers
+      \item Compartilhamento com a equipe
+    \end{itemize}
+
+    \column{0.5\textwidth}
+    \textbf{Entrega}
+    \begin{itemize}
+      \item Testes manuais e/ou automáticos
+      \item Correção de bugs no próprio ambiente
+      \item \textit{Push} da imagem atualizada para produção
+    \end{itemize}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Eficiência de Recursos}
+  \begin{alertblock}{Docker vs Máquinas Virtuais}
+    Docker é leve e rápido, com melhor custo-benefício que VMs baseadas em \textit{hypervisor}.
+  \end{alertblock}
 \end{frame}

@@ -1,0 +1,137 @@
+\section{Arquitetura Docker}
+
+\begin{frame}
+  \frametitle{Arquitetura Cliente-Servidor}
+  \begin{block}{Visão Geral}
+    O \textit{Docker client} comunica-se com o \textit{Docker daemon}, que executa o \textit{build}, execução e distribuição dos containers.
+  \end{block}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item<2-> Daemon pode estar no mesmo sistema ou em um sistema remoto
+    \item<3-> Comunicação via REST API, usando UNIX \textit{sockets} ou uma interface de rede
+    \item<4-> Docker Compose também é um cliente Docker, permite trabalhar com aplicações que utilizam vários containers
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Docker Daemon/dockerd}
+  Escuta os \textit{requests} da Docker API e gerencia os objetos Docker.
+
+  \vspace{0.5em}
+  Objetos gerenciados:
+  \begin{itemize}
+    \item Imagens
+    \item Containers
+    \item \textit{Networks} e Volumes
+  \end{itemize}
+
+  \vspace{0.5em}
+  Um daemon também pode se comunicar com outros daemons para gerenciar serviços.
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Docker Client}
+    Forma primária de interagir com o Docker, envia comandos ao \texttt{dockerd} via Docker API.
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item Exemplo: \texttt{docker run} → cliente envia ao daemon → daemon processa
+    \item Um cliente pode se comunicar com \textbf{mais de um daemon}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Docker Desktop}
+  Aplicação para \textbf{Mac, Windows e Linux} para buildar e compartilhar containers.
+
+  \vspace{0.5em}
+  Inclui:
+  \begin{itemize}
+    \item Docker daemon (\texttt{dockerd}) e Docker client (\texttt{docker})
+    \item Docker Compose e Docker Content Trust
+    \item Kubernetes e Credential Helper
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Docker Registries}
+    Repositórios para armazenar e distribuir Docker images.
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \textbf{Docker Hub} é o registro público padrão
+    \item Também é possível manter registros \textbf{privados}
+  \end{itemize}
+
+  \vspace{0.5em}
+  \onslide<4->{
+    \begin{columns}
+      \column{0.33\textwidth}
+        \texttt{docker pull} \\ obtém a imagem
+      \column{0.33\textwidth}
+        \texttt{docker run} \\ obtém e executa
+      \column{0.33\textwidth}
+        \texttt{docker push} \\ envia a imagem
+    \end{columns}
+  }
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Docker Objects}
+  Ao usar o Docker, trabalha-se com imagens, containers, \textit{networks},
+  volumes, \textit{plugins} e outros objetos.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Docker Objects — \textit{Image}}
+  \begin{block}{O que é uma \textit{image}?}
+    \textit{Template} com instruções para criar um container. Geralmente baseada em
+    outra image, com customizações adicionais.
+  \end{block}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item Definida por um \textbf{Dockerfile}
+    \item Cada instrução do Dockerfile cria uma \textbf{camada} na image
+    \item Ao refazer o \textit{build}, só as camadas \textbf{modificadas} são reconstruídas
+    \item Resultado: images leves, pequenas e rápidas
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Docker Objects — \textit{Containers}}
+  \begin{block}{O que é um container?}
+    Uma \textbf{instância em execução} de uma \textit{image}.
+  \end{block}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item É possível criar, iniciar, parar, mover ou deletar via API ou CLI
+    \item Conectável a \textit{networks} e volumes de armazenamento
+    \item Isolado por padrão, nível de isolamento configurável
+    \item \alert{Mudanças não persistidas são perdidas quando remove o container}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exemplo: \texttt{docker run}}
+  \texttt{docker run -i -t ubuntu /bin/bash}
+
+  \vspace{0.5em}
+  O que acontece ao executar:
+
+  \begin{enumerate}
+    \item<2-> Baixa a \textit{image} \texttt{ubuntu} do registro, se não existir localmente
+    \item<3-> Cria um novo container
+    \item<4-> Aloca sistema de arquivos de leitura e escrita
+    \item<5-> Cria interface de rede e atribui IP ao container
+    \item<6-> Inicia o container e executa \texttt{/bin/bash} interativamente
+    \item<7-> Ao executar \texttt{exit} — container \textbf{para}, mas \textbf{não é removido}
+  \end{enumerate}
+\end{frame}
