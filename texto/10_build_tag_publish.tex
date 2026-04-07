@@ -1,0 +1,80 @@
+\section{Construindo, tagueando e publicando imagens}
+
+\subsection{Building images}
+
+O comando mais básico para construir uma imagem é:
+
+\begin{verbatim}
+docker build .
+\end{verbatim}
+
+O \texttt{.} indica o \textit{build context} --- o diretório onde o builder encontrará o Dockerfile e os arquivos referenciados. Ao executar, o builder baixa a imagem base (se necessário) e executa as instruções do Dockerfile. Sem uma tag, a imagem recebe apenas um ID (hash SHA256), que não é fácil de lembrar.
+
+\subsection{Tagging images}
+
+Tags dão nomes memoráveis às imagens. A estrutura completa de um nome de imagem é:
+
+\begin{verbatim}
+[HOST[:PORT_NUMBER]/]PATH[:TAG]
+\end{verbatim}
+
+\begin{itemize}
+    \item \textbf{HOST}: registro onde a imagem está. Padrão: \texttt{docker.io}.
+    \item \textbf{PORT\_NUMBER}: porta do registro (se um host foi especificado).
+    \item \textbf{PATH}: caminho no formato \texttt{[NAMESPACE/]REPOSITORY}. Se nenhum namespace é dado, usa-se \texttt{library}.
+    \item \textbf{TAG}: identificador de versão. Padrão: \texttt{latest}.
+\end{itemize}
+
+Para dar tag durante o build, usa-se a flag \texttt{-t}:
+
+\begin{verbatim}
+docker build -t meu-usuario/minha-imagem .
+\end{verbatim}
+
+Para adicionar outra tag a uma imagem já existente:
+
+\begin{verbatim}
+docker image tag meu-usuario/minha-imagem outro-usuario/outra-imagem:v1
+\end{verbatim}
+
+\subsection{Publishing images}
+
+Para enviar a imagem ao registro, é necessário estar autenticado e usar o comando \texttt{docker push}:
+
+\begin{verbatim}
+docker login
+docker push meu-usuario/minha-imagem
+\end{verbatim}
+
+\subsection{Docker Hub}
+
+Para compartilhar Docker images, é necessário um local para armazená-las. O Docker Hub é o registro padrão, provendo tanto um local para armazenar images próprias quanto para encontrar images de outros usuários.
+
+Ao escolher images, o Docker Hub fornece categorias de images confiáveis:
+
+\begin{itemize}
+    \item \textbf{Docker Official Images (DOI)}: images selecionadas dos softwares mais populares, seguindo boas práticas e atualizadas regularmente.
+    \item \textbf{Docker Hardened Images (DHI)}: images desenhadas para reduzir a superfície de ataque --- seguras, simples e praticamente sem vulnerabilidades.
+\end{itemize}
+
+\subsection{Guia prático completo}
+
+\begin{verbatim}
+# Clonar o repositório
+git clone https://github.com/docker/getting-started-todo-app
+cd getting-started-todo-app
+
+# Construir a imagem
+docker build -t SEU_USERNAME/concepts-build-image-demo .
+
+# Verificar a imagem criada
+docker image ls
+
+# Visualizar histórico de layers
+docker image history SEU_USERNAME/concepts-build-image-demo
+
+# Enviar ao Docker Hub
+docker push SEU_USERNAME/concepts-build-image-demo
+\end{verbatim}
+
+O comando \texttt{docker image history} mostra as camadas da imagem, distinguindo as que foram adicionadas pelo usuário das herdadas da imagem base. Se ao fazer push receber o erro \texttt{requested access to the resource is denied}, verifique se está logado (\texttt{docker login}) e se o username na tag está correto.

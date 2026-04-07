@@ -1,0 +1,34 @@
+\section{Imagens Docker}
+
+Uma \textbf{container image} (ou simplesmente imagem) é um pacote padronizado que contém todos os arquivos, binários, bibliotecas e configurações necessários para rodar um container. Por exemplo, uma imagem PostgreSQL contém os binários do banco de dados, arquivos de configuração e dependências; uma imagem de aplicação Python inclui o runtime Python, o código da aplicação e suas dependências.
+
+\subsection{Características das Imagens}
+
+\begin{itemize}
+    \item \textbf{Imutabilidade}: uma vez criada, a imagem não pode ser modificada. É possível apenas criar uma nova imagem ou adicionar camadas sobre uma existente.
+    \item \textbf{Camadas (Layers)}: imagens são compostas por camadas. Cada camada representa um conjunto de mudanças no sistema de arquivos --- adição, remoção ou modificação de arquivos.
+\end{itemize}
+
+Essas duas características permitem estender imagens já existentes. Por exemplo, para construir uma aplicação Python, pode-se partir de uma imagem base do Python e adicionar camadas com as dependências e o código da aplicação.
+
+\subsection{Encontrando Imagens}
+
+O \textbf{Docker Hub} é o marketplace padrão para armazenar e distribuir imagens. O Docker categoriza as imagens em:
+
+\begin{itemize}
+    \item \textbf{Docker Official Images}: repositórios curados pelo Docker, ponto de partida para a maioria dos usuários.
+    \item \textbf{Docker Hardened Images}: imagens mínimas, seguras e prontas para produção, com praticamente zero CVEs.
+    \item \textbf{Docker Verified Publishers}: imagens de alta qualidade publicadas por fornecedores verificados pelo Docker.
+    \item \textbf{Docker-Sponsored Open Source}: imagens mantidas por projetos de código aberto patrocinados pelo Docker.
+\end{itemize}
+
+\subsection{Comandos básicos para imagens}
+
+\begin{verbatim}
+docker search docker/welcome-to-docker
+docker pull docker/welcome-to-docker
+docker image ls
+docker image history docker/welcome-to-docker
+\end{verbatim}
+
+O comando \texttt{docker pull} baixa a imagem do repositório, onde cada linha de download representa uma camada. O comando \texttt{docker image history} exibe as camadas que compõem a imagem.

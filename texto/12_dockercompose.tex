@@ -1,0 +1,25 @@
+\section{Docker Compose}
+
+Quando uma aplicação envolve múltiplos containers --- bancos de dados, caches, filas de mensagens, entre outros serviços --- surge a questão de como orquestrá-los. Uma boa prática é que cada container faça uma única função e a faça bem.
+
+Embora seja possível usar vários comandos \texttt{docker run} para iniciar múltiplos containers, isso exige lidar manualmente com networks e diversas flags de configuração. O \textbf{Docker Compose} resolve esse problema ao permitir definir todos os containers e suas configurações em um único arquivo YAML. Qualquer pessoa que clone o repositório pode subir toda a aplicação com um único comando.
+
+\subsection{Dockerfile vs Compose file}
+
+O \textbf{Dockerfile} contém instruções para construir uma \textit{container image}, enquanto o \textbf{Compose file} define os containers que serão executados e suas configurações. Frequentemente, o arquivo Compose referencia um Dockerfile para buildar a imagem usada em um serviço específico.
+
+\subsection{Comandos básicos}
+
+\begin{verbatim}
+# Clonar o projeto de exemplo
+git clone https://github.com/dockersamples/todo-list-app
+cd todo-list-app
+
+# Subir todos os serviços
+docker compose up -d --build
+
+# Derrubar todos os serviços
+docker compose down
+\end{verbatim}
+
+O arquivo \texttt{compose.yaml} dentro do projeto define todos os serviços, suas imagens, portas, volumes, networks e demais configurações necessárias.

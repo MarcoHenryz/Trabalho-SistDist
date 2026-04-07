@@ -1,0 +1,31 @@
+\section{Docker Registry}
+
+Um \textbf{registry} (registro) é um local centralizado para armazenar e compartilhar imagens de container. Pode ser público ou privado. O \textbf{Docker Hub} é o registro público padrão, acessível a todos. É possível também armazenar imagens em um registro local.
+
+\subsection{Outros registros}
+
+Além do Docker Hub, existem outros registros populares:
+
+\begin{itemize}
+    \item Amazon Elastic Container Registry (ECR)
+    \item Azure Container Registry (ACR)
+    \item Google Container Registry (GCR)
+\end{itemize}
+
+\subsection{Registry vs Repository}
+
+Apesar de relacionados, registro e repositório não são a mesma coisa. O \textbf{registro} é o local centralizado que armazena imagens, enquanto um \textbf{repositório} é uma coleção de imagens relacionadas dentro de um registro --- como uma pasta que organiza imagens por projeto. Cada repositório contém uma ou mais imagens.
+
+\subsection{Fluxo prático: build, tag e push para o registro}
+
+\begin{verbatim}
+git clone https://github.com/dockersamples/helloworld-demo-node
+cd helloworld-demo-node
+docker build -t SEU_USERNAME/docker-quickstart .
+docker images
+docker run -d -p 8080:8080 SEU_USERNAME/docker-quickstart
+docker tag SEU_USERNAME/docker-quickstart SEU_USERNAME/docker-quickstart:1.0
+docker push SEU_USERNAME/docker-quickstart:1.0
+\end{verbatim}
+
+Após o push, a imagem estará disponível no Docker Hub, na seção \textit{Tags} do repositório.

@@ -1,0 +1,22 @@
+\section{O que é o Docker? Containers vs Máquinas Virtuais}
+
+Imagine um cenário em que uma aplicação necessita de três componentes principais: um front-end React, uma API Python e um banco de dados PostgreSQL. Para trabalhar nesse projeto, seria necessário instalar Node, Python e PostgreSQL. Como garantir que as versões dessas ferramentas sejam as mesmas de todo o time? Ou do ambiente de CI/CD? Como evitar que outras ferramentas ou versões instaladas localmente interfiram no projeto?
+
+Containers resolvem esses problemas. Um \textbf{container} é um processo isolado para cada componente da aplicação. Cada parte --- o React frontend, a Python API e o banco de dados --- roda em seu próprio ambiente isolado, completamente separado de tudo na máquina local.
+
+\subsection{Características dos Containers}
+
+\begin{itemize}
+    \item \textbf{Self-contained}: cada container possui tudo que precisa para funcionar, sem depender de nenhuma dependência local.
+    \item \textbf{Isolado}: containers têm influência mínima da máquina local e de outros containers, aumentando a segurança da aplicação.
+    \item \textbf{Independente}: deletar um container não afeta o funcionamento de outro.
+    \item \textbf{Portável}: um container que roda em uma máquina vai rodar da mesma forma em outra, em um servidor ou na nuvem.
+\end{itemize}
+
+\subsection{Containers vs Máquinas Virtuais}
+
+Uma \textbf{Máquina Virtual (VM)} é um sistema operacional completo, com seu próprio kernel, hardware drivers, programas e aplicações. Configurar uma VM apenas para rodar uma aplicação de forma isolada é pouco eficiente.
+
+Um \textbf{container}, por outro lado, é um processo isolado com tudo necessário para a aplicação rodar. Se vários containers forem executados simultaneamente, eles compartilham o mesmo kernel do sistema operacional host, permitindo rodar mais aplicações com menos infraestrutura de hardware. Enquanto cada VM precisa de seu próprio sistema operacional completo, containers são mais leves e rápidos para iniciar.
+
+

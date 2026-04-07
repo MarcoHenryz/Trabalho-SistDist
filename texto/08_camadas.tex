@@ -1,0 +1,82 @@
+\section{Entendendo as camadas de uma imagem}
+
+Uma imagem de container, quando criada, é formada por \textbf{camadas imutáveis}. Cada camada representa um conjunto de modificações no sistema de arquivos.
+
+\subsection{Exemplo de camadas}
+
+Considere uma imagem Python típica:
+
+\begin{enumerate}
+    \item A primeira camada adiciona comandos básicos e um gerenciador de pacotes (\texttt{apt}).
+    \item A segunda camada adiciona o runtime Python e o \texttt{pip}.
+    \item A terceira camada copia o arquivo \texttt{requirements.txt} da aplicação.
+    \item A quarta camada instala as dependências listadas.
+    \item A quinta camada copia o código-fonte da aplicação.
+\end{enumerate}
+
+Essa estrutura em camadas é benéfica porque permite a \textbf{reutilização} entre imagens. Se duas aplicações utilizam Python, ambas podem compartilhar as camadas que instalam o Python e o \texttt{pip}, tornando os builds mais rápidos e reduzindo o armazenamento necessário.
+
+\subsection{Empilhamento de camadas}
+
+\begin{enumerate}
+    \item Cada camada, ao ser instalada, é extraída em seu próprio diretório no sistema de arquivos local.
+    \item Quando um container é iniciado, um \textbf{sistema de arquivos unificado} é criado empilhando todas as camadas, gerando uma visão unificada.
+    \item O container então redireciona seu diretório raiz para essa visão unificada usando \texttt{chroot}.
+\end{enumerate}
+
+\subsection{Criando layers manualmente}
+
+Embora na prática se use Dockerfiles, é possível criar layers manualmente com \texttt{docker container commit} para entender o mecanismo interno.
+
+\subsubsection{Criando uma base image}
+
+\begin{verbatim}
+# Iniciar container Ubuntu interativo
+docker run --name=base-container -ti ubuntu
+
+# Dentro do container: instalar Node.js
+apt update && apt install -y nodejs
+node -e 'console.log("Hello world!")'
+
+# Em outro terminal: salvar como nova imagem
+docker container commit -m "Add node" base-container node-base
+
+# Verificar as layers
+docker image history node-base
+
+# Testar a nova imagem
+docker run node-base node -e "console.log('Hello again')"
+
+# Remover o container base
+docker rm -f base-container
+\end{verbatim}
+
+Uma \textbf{base image} é uma fundação para construir outras imagens. Qualquer imagem pode ser usada como base, mas algumas são criadas intencionalmente como blocos de construção.
+
+\subsubsection{Construindo uma app image}
+
+\begin{verbatim}
+# Iniciar container a partir da node-base
+docker run --name=app-container -ti node-base
+
+# Dentro do container: criar um programa Node
+echo 'console.log("Hello from an app")' > app.js
+node app.js
+
+# Em outro terminal: salvar como nova imagem com comando padrão
+docker container commit -c "CMD node app.js" -m "Add app" \
+    app-container sample-app
+
+# Verificar as layers
+docker image history sample-app
+
+# Rodar a imagem final
+docker run sample-app
+
+# Limpar
+docker rm -f app-container
+\end{verbatim}
+
+A flag \texttt{-c} define configurações adicionais na imagem --- neste caso, o comando padrão ao iniciar o container será \texttt{node app.js}.
+
+Na prática, a maioria dos builds não usa \texttt{docker container commit}. Em vez disso, utiliza-se um \textbf{Dockerfile} que automatiza todos esses passos.

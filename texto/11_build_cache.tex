@@ -1,0 +1,52 @@
+\section{Usando o build cache}
+
+Ao executar \texttt{docker build}, o Docker executa cada instrução do Dockerfile criando uma camada para cada comando, na ordem especificada. Para cada instrução, o Docker verifica se pode reutilizar o resultado de um build anterior. Se encontrar uma correspondência, ele usa o resultado em cache ao invés de re-executar a instrução, tornando o build mais rápido e eficiente.
+
+\subsection{Invalidação do cache}
+
+O cache é invalidado nas seguintes situações:
+
+\begin{itemize}
+    \item Qualquer mudança no comando de uma instrução \texttt{RUN} invalida aquela camada.
+    \item Qualquer alteração nos arquivos copiados com \texttt{COPY} ou \texttt{ADD} --- seja no conteúdo ou em propriedades como permissões.
+    \item Uma vez que uma camada é invalidada, \textbf{todas as camadas subsequentes} também são invalidadas, prevenindo inconsistências.
+\end{itemize}
+
+\subsection{O problema do Dockerfile ingênuo}
+
+Considere o Dockerfile inicial:
+
+\begin{verbatim}
+FROM node:22-alpine
+WORKDIR /app
+COPY . .
+RUN yarn install --production
+EXPOSE 3000
+CMD ["node", "./src/index.js"]
+\end{verbatim}
+
+O primeiro build leva cerca de 20 segundos. Um rebuild sem alterações leva aproximadamente 1 segundo, pois todas as camadas estão em cache. Porém, qualquer alteração no código-fonte invalida o \texttt{COPY .\ .}, forçando o \texttt{RUN yarn install} a executar novamente --- mesmo que as dependências não tenham mudado.
+
+\subsection{Dockerfile otimizado}
+
+A solução é copiar primeiro apenas os arquivos de dependência, instalar, e depois copiar o restante:
+
+\begin{verbatim}
+FROM node:22-alpine
+WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --production
+COPY . .
+EXPOSE 3000
+CMD ["node", "src/index.js"]
+\end{verbatim}
+
+Também deve-se criar um arquivo \texttt{.dockerignore} com o conteúdo \texttt{node\_modules} para evitar copiar dependências locais.
+
+\subsection{Resultado da otimização}
+
+Com essa estrutura, ao alterar apenas o código-fonte (por exemplo, \texttt{src/static/index.html}), as camadas de \texttt{COPY package.json} e \texttt{RUN yarn install} permanecem em cache. O rebuild cai de 16 segundos para aproximadamente 1,2 segundo.
+
+\subsection{Princípio geral}
+
+Instruções que mudam com \textbf{menor frequência} devem ficar no topo do Dockerfile (como instalação de dependências), enquanto instruções que mudam \textbf{com mais frequência} devem ficar por último (como a cópia do código-fonte). Dessa forma, o cache é aproveitado ao máximo.

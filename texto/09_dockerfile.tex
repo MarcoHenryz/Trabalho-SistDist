@@ -1,0 +1,63 @@
+\section{Anatomia do Dockerfile}
+
+O \textbf{Dockerfile} é um documento de texto que contém as instruções para criar uma imagem de container. Ele especifica comandos a executar, arquivos a copiar, comando de inicialização, entre outros.
+
+\subsection{Exemplo de Dockerfile}
+
+\begin{verbatim}
+FROM python:3.13
+WORKDIR /usr/local/app
+
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY src ./src
+EXPOSE 8080
+
+RUN useradd app
+USER app
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
+\end{verbatim}
+
+\subsection{Principais instruções}
+
+\begin{itemize}
+    \item \texttt{FROM \textit{image}}: especifica a imagem base utilizada no build.
+    \item \texttt{WORKDIR \textit{path}}: define o diretório de trabalho dentro da imagem, onde arquivos serão copiados e comandos serão executados.
+    \item \texttt{COPY \textit{host-path} \textit{image-path}}: copia arquivos do host para dentro da imagem.
+    \item \texttt{RUN \textit{command}}: executa um comando durante o build (por exemplo, instalar dependências).
+    \item \texttt{ENV \textit{name} \textit{value}}: define uma variável de ambiente disponível no container em execução.
+    \item \texttt{EXPOSE \textit{port}}: indica a porta que a imagem deseja expor.
+    \item \texttt{USER \textit{user-or-uid}}: define o usuário padrão para os comandos subsequentes.
+    \item \texttt{CMD ["command", "arg1"]}: define o comando padrão executado ao iniciar um container a partir dessa imagem.
+\end{itemize}
+
+\subsection{Sequência típica de um Dockerfile}
+
+Um Dockerfile geralmente segue esta ordem:
+
+\begin{enumerate}
+    \item Determinar a imagem base (\texttt{FROM}).
+    \item Instalar as dependências da aplicação (\texttt{RUN}).
+    \item Copiar o código-fonte e binários relevantes (\texttt{COPY}).
+    \item Configurar a imagem final (\texttt{EXPOSE}, \texttt{USER}, \texttt{CMD}).
+\end{enumerate}
+
+\subsection{Exemplo prático: aplicação Node.js}
+
+Construindo um Dockerfile do zero para uma aplicação Node.js simples. O projeto base pode ser obtido clonando o repositório \texttt{docker/getting-started-todo-app} (branch \texttt{build-image-from-scratch}). O Dockerfile deve ser criado dentro da pasta \texttt{getting-started-todo-app/app/}.
+
+É importante notar que o arquivo \texttt{Dockerfile} não tem extensão. Alguns editores podem tentar adicionar uma automaticamente.
+
+\begin{verbatim}
+FROM node:22-alpine
+WORKDIR /app
+COPY . .
+RUN yarn install --production
+CMD ["node", "./src/index.js"]
+\end{verbatim}
+
+Cada instrução corresponde a um passo: a imagem base é o Node.js 22 com Alpine Linux (leve e enxuta); o diretório de trabalho é \texttt{/app}; todos os arquivos do projeto são copiados; as dependências de produção são instaladas via Yarn; e o comando padrão inicia a aplicação.
+
+Este Dockerfile não segue todas as boas práticas (cache de build, usuário não-root, multi-stage builds). O comando \texttt{docker init} pode ser usado para gerar automaticamente um Dockerfile otimizado.
