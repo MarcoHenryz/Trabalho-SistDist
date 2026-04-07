@@ -1,0 +1,56 @@
+\section{O que é o Docker?}
+
+\begin{frame}
+  \frametitle{O Problema}
+  Uma aplicação com três componentes:
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \textbf{React frontend} — precisa de Node
+    \item \textbf{Python API} — precisa de Python
+    \item \textbf{PostgreSQL} — precisa do banco instalado
+  \end{itemize}
+
+  \vspace{0.5em}
+  Como garantir que as versões sejam as mesmas em todo o time, no CI/CD
+  e sem interferência de outras ferramentas locais?
+\end{frame}
+
+\begin{frame}
+  \frametitle{A Solução: Containers}
+  Um \textbf{container} é um processo isolado para cada componente da aplicação.
+
+  \vspace{0.5em}
+  Cada parte roda em seu próprio ambiente — completamente separado da máquina local.
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \textbf{Self-contained} — tudo que precisa, sem depender de dependências locais
+    \item \textbf{Isolado} — influência mínima da máquina e de outros containers
+    \item \textbf{Independente} — deletar um container não afeta os outros
+    \item \textbf{Portável} — roda igual em qualquer máquina, servidor ou nuvem
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Containers vs Máquinas Virtuais}
+  \begin{columns}
+    \column{0.5\textwidth}
+      \textbf{Máquina Virtual}
+      \begin{itemize}
+        \item Sistema operacional completo
+        \item Kernel, drivers e programas próprios
+        \item Pesada e lenta para iniciar
+        \item Pouco eficiente para isolar uma aplicação
+      \end{itemize}
+
+    \column{0.5\textwidth}
+      \textbf{Container}
+      \begin{itemize}
+        \item Processo isolado e leve
+        \item Compartilha o kernel do \textit{host}
+        \item Rápido para iniciar
+        \item Mais aplicações com menos infraestrutura
+      \end{itemize}
+  \end{columns}
+\end{frame}
