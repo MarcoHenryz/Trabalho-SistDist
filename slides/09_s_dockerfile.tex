@@ -1,0 +1,84 @@
+\section{Anatomia do Dockerfile}
+
+\begin{frame}
+  \frametitle{O que é um Dockerfile?}
+  Documento de texto com instruções para criar uma imagem de container.
+
+  \vspace{0.5em}
+  Especifica:
+  \begin{itemize}
+    \item Comandos a executar
+    \item Arquivos a copiar
+    \item Comando de inicialização
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Principais Instruções}
+  \begin{itemize}
+    \item \texttt{FROM}: Imagem base do build
+    \item \texttt{WORKDIR}: Diretório de trabalho dentro da imagem
+    \item \texttt{COPY}: Copia arquivos do \textit{host} para a imagem
+    \item \texttt{RUN}: Executa um comando durante o build
+    \item \texttt{ENV}: Define variável de ambiente no container
+    \item \texttt{EXPOSE}: Indica a porta que a imagem deseja expor
+    \item \texttt{USER}: Define o usuário padrão para comandos subsequentes
+    \item \texttt{CMD}: Comando padrão ao iniciar o container
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sequência Típica de um Dockerfile}
+  \begin{enumerate}
+    \item \texttt{FROM}: Determinar a imagem base
+    \item \texttt{RUN}: Instalar dependências da aplicação
+    \item \texttt{COPY}: Copiar código-fonte e binários
+    \item \texttt{EXPOSE}, \texttt{USER}, \texttt{CMD}: Configurar a imagem final
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exemplo: Dockerfile Python}
+  \texttt{FROM python:3.13}
+
+  \texttt{WORKDIR /usr/local/app}
+
+  \texttt{COPY requirements.txt ./}
+
+  \texttt{RUN pip install --no-cache-dir -r requirements.txt}
+
+  \texttt{COPY src ./src}
+
+  \texttt{EXPOSE 8080}
+
+  \texttt{RUN useradd app}
+
+  \texttt{USER app}
+
+  \texttt{CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exemplo Prático: Aplicação Node.js}
+  \texttt{FROM node:22-alpine}
+
+  \texttt{WORKDIR /app}
+
+  \texttt{COPY . .}
+
+  \texttt{RUN yarn install --production}
+
+  \texttt{CMD ["node", "./src/index.js"]}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \texttt{node:22-alpine}: Node.js 22 com Alpine Linux (leve e enxuto)
+    \item \texttt{yarn install --production}: Instala apenas dependências de produção
+  \end{itemize}
+
+  \vspace{0.5em}
+  \begin{alertblock}{Atenção}
+    O arquivo \texttt{Dockerfile} não tem extensão. Use \texttt{docker init}
+    para gerar automaticamente um Dockerfile otimizado.
+  \end{alertblock}
+\end{frame}

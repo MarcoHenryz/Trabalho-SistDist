@@ -1,0 +1,65 @@
+\section{Imagens Docker}
+
+\begin{frame}
+  \frametitle{O que é uma Container Image?}
+  Pacote padronizado com tudo o necessário para rodar um container:
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \textbf{PostgreSQL}: Binários do banco, configurações e dependências
+    \item \textbf{Python}: runtime, código da aplicação e suas dependências
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Características das Imagens}
+  \begin{itemize}
+    \item \textbf{Imutabilidade}: Uma vez criada, não pode ser modificada;
+          apenas cria-se uma nova imagem ou adiciona-se camadas sobre uma existente
+    \item \textbf{Camadas (\textit{Layers})}: Cada camada representa um conjunto
+          de mudanças no sistema de arquivos: adição, remoção ou modificação de arquivos
+  \end{itemize}
+
+  \vspace{0.5em}
+  Essas características permitem \textbf{estender imagens existentes}, por exemplo,
+  partir de uma imagem base Python e adicionar camadas com dependências e código.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Encontrando Imagens — Docker Hub}
+  Marketplace padrão para armazenar e distribuir imagens. Categorias:
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \textbf{Docker Official Images}: Repositórios curados pelo Docker
+    \item \textbf{Docker Hardened Images}: Imagens mínimas e seguras, praticamente zero CVEs
+    \item \textbf{Docker Verified Publishers}: Imagens de fornecedores verificados
+    \item \textbf{Docker-Sponsored Open Source}: Mantidas por projetos open source patrocinados
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Comandos Básicos para Imagens}
+  Buscar uma imagem:
+
+  \vspace{0.3em}
+  \texttt{docker search docker/welcome-to-docker}
+
+  \vspace{0.5em}
+  Baixar a imagem (cada linha = uma camada):
+
+  \vspace{0.3em}
+  \texttt{docker pull docker/welcome-to-docker}
+
+  \vspace{0.5em}
+  Listar imagens locais:
+
+  \vspace{0.3em}
+  \texttt{docker image ls}
+
+  \vspace{0.5em}
+  Ver as camadas de uma imagem:
+
+  \vspace{0.3em}
+  \texttt{docker image history docker/welcome-to-docker}
+\end{frame}

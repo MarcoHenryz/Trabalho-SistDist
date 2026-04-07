@@ -1,0 +1,89 @@
+\section{Camadas de uma Imagem}
+
+\begin{frame}
+  \frametitle{O que são Camadas?}
+  Uma imagem é formada por \textbf{camadas imutáveis}: cada uma representa
+  um conjunto de modificações no sistema de arquivos.
+
+  \vspace{0.5em}
+  Exemplo de uma imagem Python típica:
+  \begin{enumerate}
+    \item Comandos básicos e gerenciador de pacotes (\texttt{apt})
+    \item Runtime Python e \texttt{pip}
+    \item Cópia do \texttt{requirements.txt}
+    \item Instalação das dependências
+    \item Cópia do código-fonte
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Reutilização de Camadas}
+  \begin{block}{Vantagem}
+    Se duas aplicações utilizam Python, ambas compartilham as camadas
+    de instalação do Python e do \texttt{pip}.
+  \end{block}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item Builds mais rápidos
+    \item Menos armazenamento necessário
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Empilhamento de Camadas}
+  \begin{enumerate}
+    \item Cada camada é extraída em seu próprio diretório no sistema de arquivos local
+    \item Ao iniciar um container, um \textbf{sistema de arquivos unificado} é criado
+          empilhando todas as camadas
+    \item O container redireciona seu diretório raiz para essa visão unificada via \texttt{chroot}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Criando uma Base Image Manualmente}
+  Iniciar container Ubuntu e instalar Node.js:
+
+  \vspace{0.3em}
+  \texttt{docker run --name=base-container -ti ubuntu}
+
+  \vspace{0.3em}
+  \texttt{apt update \&\& apt install -y nodejs}
+
+  \vspace{0.5em}
+  Salvar como nova imagem e verificar camadas:
+
+  \vspace{0.3em}
+  \texttt{docker container commit -m "Add node" base-container node-base}
+
+  \vspace{0.3em}
+  \texttt{docker image history node-base}
+
+  \vspace{0.5em}
+  \begin{block}{Base Image}
+    Fundação para construir outras imagens — qualquer imagem pode ser usada como base.
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Construindo uma App Image}
+  A partir da \texttt{node-base}, criar e salvar uma aplicação:
+
+  \vspace{0.3em}
+  \texttt{docker run --name=app-container -ti node-base}
+
+  \vspace{0.3em}
+  \texttt{echo 'console.log("Hello from an app")' > app.js}
+
+  \vspace{0.5em}
+  Salvar com comando padrão definido:
+
+  \vspace{0.3em}
+  \texttt{docker container commit -c "CMD node app.js" -m "Add app" app-container sample-app}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \texttt{-c} define configurações adicionais — aqui, o comando padrão ao iniciar
+    \item Na prática, usa-se um \textbf{Dockerfile} para automatizar todos esses passos
+  \end{itemize}
+\end{frame}

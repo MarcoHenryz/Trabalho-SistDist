@@ -1,0 +1,53 @@
+\section{Desenvolvendo com Containers}
+
+\begin{frame}
+  \frametitle{Iniciando com Docker Compose}
+  Para iniciar um projeto existente com Docker:
+
+  \vspace{0.5em}
+  \texttt{git clone https://github.com/docker/getting-started-todo-app}
+
+  \vspace{0.3em}
+  \texttt{docker compose watch}
+
+  \vspace{0.5em}
+  Ao inicializar, vários containers são criados — cada um com uma função específica.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Containers da Aplicação}
+  \begin{itemize}
+    \item \textbf{React frontend}: Servidor de desenvolvimento React com Vite
+    \item \textbf{Node backend}: API para criar, retirar e deletar tarefas
+    \item \textbf{MySQL database}: Banco de dados da aplicação
+    \item \textbf{phpMyAdmin}: Interface web para o banco em \texttt{http://db.localhost}
+    \item \textbf{Traefik proxy}: Direciona os \textit{requests} para o serviço correto,
+          tudo acessível pela porta 80
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Fazendo Mudanças no Serviço}
+  É possível alterar aspectos da aplicação diretamente nos arquivos do projeto:
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \textbf{Greeting}: Alterável em \texttt{backend/src/routes/getGreeting.js}
+    \item \textbf{Placeholder text}: Alterável em \texttt{client/src/components/AddNewItemForm.jsx}
+    \item \textbf{Cor de fundo}: Alterável em \texttt{client/src/index.css}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Vantagens do Ambiente Containerizado}
+  \begin{block}{Zero configuração prévia}
+    Ambiente de desenvolvimento completo sem instalar Node, MySQL ou qualquer
+    dependência — apenas Docker e um editor de código.
+  \end{block}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item Arquivos locais sincronizados automaticamente com os containers
+    \item Processos monitoram e respondem a alterações em tempo real
+  \end{itemize}
+\end{frame}

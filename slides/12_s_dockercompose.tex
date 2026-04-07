@@ -1,0 +1,61 @@
+\section{Docker Compose}
+
+\begin{frame}
+  \frametitle{O Problema com Múltiplos Containers}
+  Aplicações modernas envolvem vários serviços: Banco de dados, cache, filas, etc.
+
+  \vspace{0.5em}
+  \begin{block}{Boa Prática}
+    Cada container deve fazer uma única função e fazê-la bem.
+  \end{block}
+
+  \vspace{0.5em}
+  Usar vários \texttt{docker run} exige gerenciar manualmente networks
+  e diversas flags de configuração.
+\end{frame}
+
+\begin{frame}
+  \frametitle{O que é o Docker Compose?}
+  Define todos os containers e suas configurações em um único arquivo YAML.
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item Qualquer pessoa que clone o repositório sobe toda a aplicação com um único comando
+    \item Networks, volumes e configurações declaradas no próprio arquivo
+  \end{itemize}
+
+  \vspace{0.5em}
+  \begin{columns}
+    \column{0.5\textwidth}
+      \textbf{Dockerfile}
+      \begin{itemize}
+        \item Instrui como \textbf{construir} uma imagem
+      \end{itemize}
+
+    \column{0.5\textwidth}
+      \textbf{Compose file}
+      \begin{itemize}
+        \item Define quais containers \textbf{executar} e como configurá-los
+      \end{itemize}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Comandos Básicos}
+  Clonar o projeto:
+
+  \vspace{0.3em}
+  \texttt{git clone https://github.com/dockersamples/todo-list-app}
+
+  \vspace{0.5em}
+  Subir todos os serviços:
+
+  \vspace{0.3em}
+  \texttt{docker compose up -d --build}
+
+  \vspace{0.5em}
+  Derrubar todos os serviços:
+
+  \vspace{0.3em}
+  \texttt{docker compose down}
+\end{frame}

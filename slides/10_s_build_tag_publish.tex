@@ -1,0 +1,86 @@
+\section{Construindo, Tagueando e Publicando Imagens}
+
+\begin{frame}
+  \frametitle{Building Images}
+  Comando básico para construir uma imagem:
+
+  \vspace{0.3em}
+  \texttt{docker build .}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \texttt{.} indica o \textit{build context}: Diretório com o Dockerfile e arquivos referenciados
+    \item O builder baixa a imagem base e executa as instruções
+    \item Sem tag, a imagem recebe apenas um ID (hash SHA256)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Tagging Images}
+  Estrutura completa de um nome de imagem:
+
+  \vspace{0.3em}
+  \texttt{[HOST[:PORT]/]PATH[:TAG]}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \texttt{HOST}: Registro onde a imagem está (padrão: \texttt{docker.io})
+    \item \texttt{PATH}: No formato \texttt{[NAMESPACE/]REPOSITORY}
+    \item \texttt{TAG}: Identificador de versão (padrão: \texttt{latest})
+  \end{itemize}
+
+  \vspace{0.5em}
+  Tag durante o build:
+
+  \vspace{0.3em}
+  \texttt{docker build -t meu-usuario/minha-imagem .}
+
+  \vspace{0.5em}
+  Adicionar tag a uma imagem existente:
+
+  \vspace{0.3em}
+  \texttt{docker image tag meu-usuario/minha-imagem outro-usuario/outra-imagem:v1}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Publishing Images}
+  Autenticar e enviar a imagem ao registro:
+
+  \vspace{0.3em}
+  \texttt{docker login}
+
+  \vspace{0.3em}
+  \texttt{docker push meu-usuario/minha-imagem}
+
+  \vspace{0.5em}
+  \begin{alertblock}{Erro ao fazer push?}
+    Se receber \texttt{access to the resource is denied}, verifique se está
+    logado e se o username na tag está correto.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Guia Prático Completo}
+  Clonar e construir:
+
+  \vspace{0.3em}
+  \texttt{git clone https://github.com/docker/getting-started-todo-app}
+
+  \vspace{0.3em}
+  \texttt{docker build -t SEU\_USERNAME/concepts-build-image-demo .}
+
+  \vspace{0.5em}
+  Inspecionar:
+
+  \vspace{0.3em}
+  \texttt{docker image ls}
+
+  \vspace{0.3em}
+  \texttt{docker image history SEU\_USERNAME/concepts-build-image-demo}
+
+  \vspace{0.5em}
+  Publicar:
+
+  \vspace{0.3em}
+  \texttt{docker push SEU\_USERNAME/concepts-build-image-demo}
+\end{frame}

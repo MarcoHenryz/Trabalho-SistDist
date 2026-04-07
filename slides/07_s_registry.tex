@@ -1,0 +1,66 @@
+\section{Docker Registry}
+
+\begin{frame}
+  \frametitle{O que é um Registry?}
+  Local centralizado para armazenar e compartilhar imagens de container.
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \textbf{Docker Hub}: Registro público padrão, acessível a todos
+    \item Possível manter registros \textbf{privados} ou \textbf{locais}
+  \end{itemize}
+
+  \vspace{0.5em}
+  Outros registros populares:
+  \begin{itemize}
+    \item Amazon Elastic Container Registry (ECR)
+    \item Azure Container Registry (ACR)
+    \item Google Container Registry (GCR)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Registry vs Repository}
+  \begin{columns}
+    \column{0.5\textwidth}
+      \textbf{Registry}
+      \begin{itemize}
+        \item Local centralizado que armazena imagens
+        \item Exemplo: Docker Hub
+      \end{itemize}
+
+    \column{0.5\textwidth}
+      \textbf{Repository}
+      \begin{itemize}
+        \item Coleção de imagens relacionadas dentro de um registro
+        \item Organiza imagens por projeto
+        \item Contém uma ou mais imagens
+      \end{itemize}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Fluxo: Build, Tag e Push}
+  Clonar o projeto e buildar a imagem:
+
+  \vspace{0.3em}
+  \texttt{git clone https://github.com/dockersamples/helloworld-demo-node}
+
+  \vspace{0.3em}
+  \texttt{docker build -t SEU\_USERNAME/docker-quickstart .}
+
+  \vspace{0.5em}
+  Rodar localmente para testar:
+
+  \vspace{0.3em}
+  \texttt{docker run -d -p 8080:8080 SEU\_USERNAME/docker-quickstart}
+
+  \vspace{0.5em}
+  Criar uma tag e enviar para o Docker Hub:
+
+  \vspace{0.3em}
+  \texttt{docker tag SEU\_USERNAME/docker-quickstart SEU\_USERNAME/docker-quickstart:1.0}
+
+  \vspace{0.3em}
+  \texttt{docker push SEU\_USERNAME/docker-quickstart:1.0}
+\end{frame}

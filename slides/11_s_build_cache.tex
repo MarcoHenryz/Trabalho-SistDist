@@ -1,0 +1,78 @@
+\section{Usando o Build Cache}
+
+\begin{frame}
+  \frametitle{O que é o Build Cache?}
+  A cada \texttt{docker build}, o Docker verifica se pode reutilizar
+  o resultado de um build anterior para cada instrução.
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item Cache encontrado: Reutiliza o resultado, sem re-executar
+    \item Builds mais rápidos e eficientes
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Quando o Cache é Invalidado?}
+  \begin{itemize}
+    \item Mudança no comando de uma instrução \texttt{RUN}
+    \item Alteração nos arquivos copiados com \texttt{COPY} ou \texttt{ADD}: Conteúdo ou permissões
+  \end{itemize}
+
+  \vspace{0.5em}
+  \begin{alertblock}{Atenção}
+    Uma vez que uma camada é invalidada, \textbf{todas as camadas subsequentes}
+    também são invalidadas.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}
+  \frametitle{O Problema do Dockerfile Ingênuo}
+  \texttt{COPY . .}
+
+  \texttt{RUN yarn install --production}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item Primeiro build: $\approx$ 20 segundos
+    \item Rebuild sem alterações: $\approx$ 1 segundo (cache)
+    \item Qualquer mudança no código-fonte invalida o \texttt{COPY . .}
+          — forçando o \texttt{yarn install} a rodar novamente, mesmo sem
+          mudanças nas dependências
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Dockerfile Otimizado}
+  Copiar primeiro só os arquivos de dependência, depois o restante:
+
+  \vspace{0.3em}
+  \texttt{COPY package.json yarn.lock ./}
+
+  \texttt{RUN yarn install --production}
+
+  \texttt{COPY . .}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item Criar \texttt{.dockerignore} com \texttt{node\_modules}
+          para evitar copiar dependências locais
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Resultado da Otimização}
+  Alterando apenas o código-fonte:
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \texttt{COPY package.json} e \texttt{RUN yarn install} — permanecem em cache
+    \item Rebuild cai de \textbf{16 segundos} para $\approx$ \textbf{1,2 segundo}
+  \end{itemize}
+
+  \vspace{0.5em}
+  \begin{block}{Princípio Geral}
+    Instruções que mudam com \textbf{menor frequência} ficam no topo —
+    instruções que mudam \textbf{mais frequentemente} ficam por último.
+  \end{block}
+\end{frame}

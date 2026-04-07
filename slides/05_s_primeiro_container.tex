@@ -14,3 +14,36 @@
     \item Image passa a constar nas images locais
   \end{itemize}
 \end{frame}
+
+\begin{frame}
+  \frametitle{Executando Containers}
+  \texttt{docker run -d -p 8080:80 docker/welcome-to-docker}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \texttt{-d} — executa em modo \textit{detached} (segundo plano)
+    \item \texttt{-p 8080:80} — mapeia a porta 8080 do \textit{host} para a porta 80 do container
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Listando Containers}
+  \texttt{docker ps} \hspace{1em} — lista containers em execução
+
+  \vspace{0.5em}
+  \texttt{docker ps -a} \hspace{0.5em} — lista todos, incluindo os parados
+\end{frame}
+
+\begin{frame}
+  \frametitle{Parando Containers}
+  \texttt{docker ps} \hspace{2.3em} — obter o ID do container
+
+  \vspace{0.5em}
+  \texttt{docker stop <ID>} — parar o container
+
+  \vspace{0.5em}
+  \begin{block}{Dica}
+    Não é necessário digitar o ID completo — basta os caracteres suficientes
+    para torná-lo único entre todos os containers existentes.
+  \end{block}
+\end{frame}
