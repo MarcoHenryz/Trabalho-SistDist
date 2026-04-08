@@ -30,8 +30,51 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8080"]
     \item \texttt{ENV \textit{name} \textit{value}}: define uma variável de ambiente disponível no container em execução.
     \item \texttt{EXPOSE \textit{port}}: indica a porta que a imagem deseja expor.
     \item \texttt{USER \textit{user-or-uid}}: define o usuário padrão para os comandos subsequentes.
-    \item \texttt{CMD ["command", "arg1"]}: define o comando padrão executado ao iniciar um container a partir dessa imagem.
+    \item \texttt{CMD}: define o comando padrão executado ao iniciar um container.
+    \item \texttt{ENTRYPOINT}: define o executável principal do container.
 \end{itemize}
+
+\subsection{CMD vs ENTRYPOINT}
+
+Ambos definem o que é executado quando o container inicia, mas possuem diferenças importantes:
+
+\textbf{CMD} define o comando padrão, mas pode ser \textbf{completamente substituído} ao passar argumentos no \texttt{docker run}:
+
+\begin{verbatim}
+# No Dockerfile:
+CMD ["python", "app.py"]
+
+# Ao rodar, o CMD é substituído:
+docker run minha-imagem echo "outro comando"
+# Executa "echo outro comando" ao invés de "python app.py"
+\end{verbatim}
+
+\textbf{ENTRYPOINT} define o executável principal do container. Argumentos passados no \texttt{docker run} são \textbf{adicionados} ao ENTRYPOINT, não o substituem:
+
+\begin{verbatim}
+# No Dockerfile:
+ENTRYPOINT ["python", "app.py"]
+
+# Ao rodar, os argumentos são adicionados:
+docker run minha-imagem --verbose
+# Executa "python app.py --verbose"
+\end{verbatim}
+
+\textbf{Combinação de ENTRYPOINT + CMD}: o padrão mais comum é usar ENTRYPOINT para o executável fixo e CMD para os argumentos padrão que podem ser sobrescritos:
+
+\begin{verbatim}
+ENTRYPOINT ["python", "app.py"]
+CMD ["--port", "8080"]
+
+# Sem argumentos: executa "python app.py --port 8080"
+docker run minha-imagem
+
+# Com argumentos: CMD é substituído, ENTRYPOINT permanece
+docker run minha-imagem --port 3000
+# Executa "python app.py --port 3000"
+\end{verbatim}
+
+Em resumo: \texttt{ENTRYPOINT} é o ``verbo'' (o que o container faz) e \texttt{CMD} é o ``complemento'' (os argumentos padrão).
 
 \subsection{Sequência típica de um Dockerfile}
 
@@ -41,7 +84,7 @@ Um Dockerfile geralmente segue esta ordem:
     \item Determinar a imagem base (\texttt{FROM}).
     \item Instalar as dependências da aplicação (\texttt{RUN}).
     \item Copiar o código-fonte e binários relevantes (\texttt{COPY}).
-    \item Configurar a imagem final (\texttt{EXPOSE}, \texttt{USER}, \texttt{CMD}).
+    \item Configurar a imagem final (\texttt{EXPOSE}, \texttt{USER}, \texttt{CMD}/\texttt{ENTRYPOINT}).
 \end{enumerate}
 
 \subsection{Exemplo prático: aplicação Node.js}
@@ -57,7 +100,5 @@ COPY . .
 RUN yarn install --production
 CMD ["node", "./src/index.js"]
 \end{verbatim}
-
-Cada instrução corresponde a um passo: a imagem base é o Node.js 22 com Alpine Linux (leve e enxuta); o diretório de trabalho é \texttt{/app}; todos os arquivos do projeto são copiados; as dependências de produção são instaladas via Yarn; e o comando padrão inicia a aplicação.
 
 Este Dockerfile não segue todas as boas práticas (cache de build, usuário não-root, multi-stage builds). O comando \texttt{docker init} pode ser usado para gerar automaticamente um Dockerfile otimizado.

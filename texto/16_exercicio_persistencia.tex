@@ -1,0 +1,69 @@
+\section{Exercício prático: aplicação com persistência de dados}
+
+Neste exercício, o objetivo é criar um Dockerfile para uma aplicação Node.js simples que recebe uploads de arquivos, gerar a imagem e garantir que os arquivos enviados pelo usuário não sumam ao reiniciar o container, utilizando volumes.
+
+\subsection{Estrutura da aplicação}
+
+Considere uma aplicação Node.js com Express que salva uploads em um diretório \texttt{/app/uploads}:
+
+\begin{verbatim}
+minha-app/
+  Dockerfile
+  package.json
+  server.js
+  uploads/       # diretório de uploads (persistido via volume)
+\end{verbatim}
+
+\subsection{Dockerfile}
+
+\begin{verbatim}
+FROM node:22-alpine
+WORKDIR /app
+COPY package.json ./
+RUN npm install --production
+COPY server.js ./
+RUN mkdir -p /app/uploads
+EXPOSE 3000
+CMD ["node", "server.js"]
+\end{verbatim}
+
+\subsection{Build da imagem}
+
+\begin{verbatim}
+docker build -t minha-app .
+\end{verbatim}
+
+\subsection{Executar SEM volume (dados são perdidos)}
+
+\begin{verbatim}
+docker run -d -p 3000:3000 --name app-sem-volume minha-app
+# ... enviar arquivos para a aplicação ...
+docker rm -f app-sem-volume
+# Os arquivos enviados são perdidos!
+\end{verbatim}
+
+\subsection{Executar COM volume (dados persistem)}
+
+\begin{verbatim}
+# Criar o volume
+docker volume create uploads-data
+
+# Iniciar o container com o volume montado em /app/uploads
+docker run -d -p 3000:3000 --name app-com-volume \
+    -v uploads-data:/app/uploads minha-app
+
+# ... enviar arquivos para a aplicação ...
+
+# Parar e remover o container
+docker rm -f app-com-volume
+
+# Iniciar novo container com o MESMO volume
+docker run -d -p 3000:3000 --name app-restaurado \
+    -v uploads-data:/app/uploads minha-app
+
+# Os arquivos enviados ainda estão lá!
+\end{verbatim}
+
+\subsection{Conclusão}
+
+A chave é identificar quais diretórios dentro do container contêm dados que devem sobreviver ao ciclo de vida do container (como uploads, bancos de dados, logs) e montar volumes nesses diretórios. Assim, mesmo que o container seja parado, removido ou recriado, os dados permanecem intactos.

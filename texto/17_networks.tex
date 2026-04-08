@@ -1,0 +1,105 @@
+\section{Docker Networks}
+
+Docker Networks controlam como os containers se comunicam entre si e com o mundo externo. Ao instalar o Docker, três redes são criadas automaticamente:
+
+\begin{verbatim}
+docker network ls
+NETWORK ID     NAME      DRIVER    SCOPE
+17e324f45964   bridge    bridge    local
+6ed54d316334   host      host      local
+7092879f2cc8   none      null      local
+\end{verbatim}
+
+\subsection{Bridge (padrão)}
+
+O driver \textbf{bridge} é o padrão. Ele cria uma rede virtual privada no host, e os containers conectados a ela podem se comunicar entre si. Containers em redes bridge diferentes não se comunicam diretamente.
+
+\begin{verbatim}
+# Containers se conectam ao bridge padrão automaticamente
+docker run -d --name app1 nginx
+docker run -d --name app2 nginx
+\end{verbatim}
+
+Na rede bridge padrão, containers só se comunicam por endereço IP --- \textbf{não por nome}. Para resolver isso, usa-se uma rede bridge customizada (user-defined), que possui resolução DNS automática:
+
+\begin{verbatim}
+# Criar rede customizada
+docker network create minha-rede
+
+# Containers na rede customizada podem se comunicar por nome
+docker run -d --name web --network minha-rede nginx
+docker run -d --name api --network minha-rede node-app
+
+# Dentro do container "api", é possível acessar "web" pelo nome:
+docker exec api curl http://web:80
+\end{verbatim}
+
+Redes bridge customizadas são superiores à bridge padrão porque oferecem resolução DNS automática entre containers, melhor isolamento e configuração mais flexível.
+
+Para expor um container ao mundo externo, usa-se o mapeamento de portas com \texttt{-p}:
+
+\begin{verbatim}
+docker run -d -p 8080:80 --network minha-rede nginx
+\end{verbatim}
+
+\subsection{Host}
+
+O driver \textbf{host} remove o isolamento de rede entre o container e o host. O container compartilha diretamente a pilha de rede da máquina host --- não há NAT nem mapeamento de portas.
+
+\begin{verbatim}
+docker run -d --network host nginx
+# Nginx fica acessível na porta 80 do host diretamente
+\end{verbatim}
+
+Quando usar host:
+\begin{itemize}
+    \item Performance máxima de rede (sem overhead de NAT).
+    \item Aplicações que precisam escutar em muitas portas dinâmicas.
+    \item Ferramentas de monitoramento de rede.
+\end{itemize}
+
+Quando \textbf{não} usar host:
+\begin{itemize}
+    \item Quando isolamento de rede é necessário.
+    \item Quando múltiplos containers precisam usar a mesma porta.
+    \item Em produção onde isolamento é requisito de segurança.
+\end{itemize}
+
+\textbf{Observação}: o modo host só funciona nativamente no Linux. No macOS e Windows, containers rodam dentro de uma VM, então \texttt{--network host} conecta à rede da VM, não à máquina real.
+
+\subsection{None}
+
+O driver \textbf{none} desabilita completamente a rede do container. O container recebe apenas uma interface \textit{loopback} (\texttt{127.0.0.1}) e não consegue se comunicar com nada externo.
+
+\begin{verbatim}
+docker run --network none alpine ping 8.8.8.8
+# ping: sendto: Network unreachable
+\end{verbatim}
+
+É útil para containers que processam dados localmente e não precisam de nenhum acesso à rede, aumentando a segurança e o isolamento.
+
+\subsection{Comandos úteis para redes}
+
+\begin{verbatim}
+docker network ls                          # listar redes
+docker network create <nome>               # criar rede
+docker network inspect <nome>              # detalhes da rede
+docker network connect <rede> <container>  # conectar container a rede
+docker network disconnect <rede> <cont.>   # desconectar
+docker network rm <nome>                   # remover rede
+docker network prune                       # remover redes não utilizadas
+\end{verbatim}
+
+\subsection{Resumo}
+
+\begin{center}
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Driver} & \textbf{Isolamento} & \textbf{Comunicação} \\
+\hline
+Bridge & Rede virtual isolada & Containers na mesma rede; porta para host \\
+Host & Sem isolamento & Compartilha rede do host diretamente \\
+None & Total & Sem rede (apenas loopback) \\
+\hline
+\end{tabular}
+\end{center}

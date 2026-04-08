@@ -1,0 +1,45 @@
+\section{Exercício prático: servidor Nginx}
+
+Neste exercício, o objetivo é subir um servidor Nginx, alterar a página inicial via terminal e monitorar os logs em tempo real.
+
+\subsection{Subindo o servidor Nginx}
+
+\begin{verbatim}
+docker run -d -p 8080:80 --name meu-nginx nginx
+\end{verbatim}
+
+Esse comando inicia um container Nginx em segundo plano, mapeando a porta 8080 do host para a porta 80 do container. Acessando \texttt{http://localhost:8080} no navegador, deve aparecer a página padrão do Nginx.
+
+\subsection{Alterando a página inicial via terminal}
+
+Usando \texttt{docker exec}, é possível acessar o shell do container e modificar o arquivo HTML da página padrão:
+
+\begin{verbatim}
+docker exec -it meu-nginx bash
+
+# Dentro do container:
+echo '<h1>Minha pagina Docker!</h1>' > /usr/share/nginx/html/index.html
+exit
+\end{verbatim}
+
+Ao recarregar \texttt{http://localhost:8080} no navegador, a nova página aparecerá. O diretório \texttt{/usr/share/nginx/html/} é o diretório padrão onde o Nginx serve arquivos estáticos.
+
+\subsection{Monitorando logs em tempo real}
+
+\begin{verbatim}
+docker logs -f meu-nginx
+\end{verbatim}
+
+A flag \texttt{-f} segue os logs em tempo real. Cada vez que a página for acessada no navegador, uma nova linha de log de acesso aparecerá no terminal. Para sair, basta pressionar \texttt{Ctrl+C}.
+
+Para ver apenas as últimas linhas:
+
+\begin{verbatim}
+docker logs --tail 10 meu-nginx
+\end{verbatim}
+
+\subsection{Limpeza}
+
+\begin{verbatim}
+docker rm -f meu-nginx
+\end{verbatim}

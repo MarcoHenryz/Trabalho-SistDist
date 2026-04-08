@@ -8,17 +8,63 @@ Embora seja possível usar vários comandos \texttt{docker run} para iniciar mú
 
 O \textbf{Dockerfile} contém instruções para construir uma \textit{container image}, enquanto o \textbf{Compose file} define os containers que serão executados e suas configurações. Frequentemente, o arquivo Compose referencia um Dockerfile para buildar a imagem usada em um serviço específico.
 
+\subsection{Estrutura do arquivo compose.yaml}
+
+O arquivo \texttt{compose.yaml} (ou \texttt{docker-compose.yml}) define os serviços, redes e volumes da aplicação. A estrutura principal é:
+
+\begin{verbatim}
+services:
+  nome-do-servico:
+    image: imagem:tag           # imagem a ser usada
+    build: ./caminho            # OU buildar a partir de um Dockerfile
+    ports:
+      - "8080:80"               # mapeamento HOST:CONTAINER
+    environment:
+      - VARIAVEL=valor          # variáveis de ambiente
+    volumes:
+      - meus-dados:/app/data    # montar volume
+      - ./local:/app/config     # bind mount
+    networks:
+      - minha-rede              # rede a ser utilizada
+    depends_on:
+      - outro-servico           # dependência de inicialização
+
+volumes:
+  meus-dados:                   # declaração de volumes nomeados
+
+networks:
+  minha-rede:                   # declaração de redes customizadas
+\end{verbatim}
+
+\subsubsection{Campos principais}
+
+\begin{itemize}
+    \item \texttt{services}: define cada container da aplicação. Cada serviço é um container.
+    \item \texttt{image}: especifica a imagem Docker a ser usada.
+    \item \texttt{build}: alternativa ao \texttt{image} --- builda a imagem a partir de um Dockerfile local.
+    \item \texttt{ports}: mapeamento de portas no formato \texttt{HOST:CONTAINER}.
+    \item \texttt{environment}: variáveis de ambiente passadas ao container.
+    \item \texttt{volumes}: montagem de volumes ou bind mounts no container.
+    \item \texttt{networks}: redes às quais o serviço será conectado.
+    \item \texttt{depends\_on}: define a ordem de inicialização dos serviços (indica que um serviço depende de outro para subir).
+\end{itemize}
+
 \subsection{Comandos básicos}
 
 \begin{verbatim}
-# Clonar o projeto de exemplo
+docker compose up -d --build    # subir todos os serviços em background
+docker compose down             # derrubar todos os serviços
+docker compose ps               # listar serviços em execução
+docker compose logs             # ver logs de todos os serviços
+docker compose logs -f <serv.>  # seguir logs de um serviço específico
+\end{verbatim}
+
+\subsection{Exemplo básico}
+
+\begin{verbatim}
 git clone https://github.com/dockersamples/todo-list-app
 cd todo-list-app
-
-# Subir todos os serviços
 docker compose up -d --build
-
-# Derrubar todos os serviços
 docker compose down
 \end{verbatim}
 

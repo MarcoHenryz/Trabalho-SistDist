@@ -1,0 +1,118 @@
+\section{Exercício prático: WordPress + MySQL com Docker Compose}
+
+Neste exercício, o objetivo é montar um ambiente completo de WordPress (aplicação + banco MySQL) usando Docker Compose, configurando a rede para que eles se comuniquem automaticamente.
+
+\subsection{Estrutura do projeto}
+
+\begin{verbatim}
+wordpress-docker/
+  compose.yaml
+\end{verbatim}
+
+\subsection{Arquivo compose.yaml}
+
+\begin{verbatim}
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: senharoot
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wpsenha
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - wp-network
+
+  wordpress:
+    image: wordpress:latest
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wpsenha
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp_data:/var/www/html
+    networks:
+      - wp-network
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+  wp_data:
+
+networks:
+  wp-network:
+\end{verbatim}
+
+\subsection{Explicação do arquivo}
+
+\subsubsection{Serviço db (MySQL)}
+
+\begin{itemize}
+    \item Usa a imagem \texttt{mysql:8.0}.
+    \item As variáveis de ambiente configuram o banco: senha root, nome do banco, usuário e senha.
+    \item O volume \texttt{db\_data} persiste os dados do MySQL em \texttt{/var/lib/mysql}, garantindo que os dados sobrevivam a reinicializações.
+    \item Conectado à rede \texttt{wp-network}.
+\end{itemize}
+
+\subsubsection{Serviço wordpress}
+
+\begin{itemize}
+    \item Usa a imagem oficial \texttt{wordpress:latest}.
+    \item Porta 8080 do host mapeada para porta 80 do container.
+    \item As variáveis de ambiente apontam para o serviço \texttt{db} --- o Docker Compose resolve o nome \texttt{db} automaticamente para o IP do container MySQL, graças à resolução DNS da rede customizada.
+    \item O volume \texttt{wp\_data} persiste os arquivos do WordPress.
+    \item \texttt{depends\_on: db} garante que o MySQL inicie antes do WordPress.
+    \item Conectado à mesma rede \texttt{wp-network}.
+\end{itemize}
+
+\subsubsection{Volumes e Networks}
+
+Os volumes \texttt{db\_data} e \texttt{wp\_data} são declarados na seção \texttt{volumes} para que o Docker os gerencie. A rede \texttt{wp-network} é declarada na seção \texttt{networks} e permite que os dois serviços se comuniquem pelo nome do serviço (por exemplo, o WordPress acessa o MySQL usando o hostname \texttt{db}).
+
+\subsection{Executando}
+
+\begin{verbatim}
+# Subir toda a stack
+docker compose up -d
+
+# Verificar os serviços rodando
+docker compose ps
+
+# Acessar o WordPress no navegador
+# http://localhost:8080
+\end{verbatim}
+
+Ao acessar \texttt{http://localhost:8080}, o assistente de instalação do WordPress será exibido. Todo o ambiente --- aplicação e banco de dados --- foi iniciado com um único comando.
+
+\subsection{Verificando a comunicação entre containers}
+
+\begin{verbatim}
+# Entrar no container do WordPress
+docker exec -it wordpress-docker-wordpress-1 bash
+
+# Dentro do container, testar a conexão com o MySQL
+apt-get update && apt-get install -y default-mysql-client
+mysql -h db -u wpuser -pwpsenha wordpress -e "SHOW TABLES;"
+\end{verbatim}
+
+O hostname \texttt{db} é resolvido automaticamente pelo Docker DNS para o IP do container MySQL, sem necessidade de configuração manual.
+
+\subsection{Derrubando o ambiente}
+
+\begin{verbatim}
+# Parar e remover containers (volumes são preservados)
+docker compose down
+
+# Parar, remover containers E volumes (apaga tudo)
+docker compose down -v
+\end{verbatim}
+
+A flag \texttt{-v} no \texttt{docker compose down} remove também os volumes, apagando todos os dados. Sem ela, os volumes são preservados e os dados estarão lá na próxima vez que subir o ambiente.

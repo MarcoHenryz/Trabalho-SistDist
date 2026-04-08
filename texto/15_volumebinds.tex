@@ -1,0 +1,120 @@
+\section{Volumes e Bind Mounts}
+
+Quando um container é iniciado, ele usa os arquivos e configurações fornecidos pela imagem. Ele pode criar, modificar e deletar arquivos, mas quando o container é removido, essas alterações são perdidas. Para persistir dados além do ciclo de vida de um container, o Docker oferece duas opções principais: \textbf{volumes} e \textbf{bind mounts}.
+
+\subsection{Volumes}
+
+Volumes são um mecanismo de armazenamento gerenciado pelo Docker que permite persistir dados independentemente do container. Funcionam como um atalho do interior do container para um local externo gerenciado pelo Docker.
+
+\begin{verbatim}
+# Criar um volume
+docker volume create meus-dados
+
+# Usar o volume ao iniciar um container
+docker run -d -p 80:80 -v meus-dados:/app/data minha-imagem
+\end{verbatim}
+
+Se o volume não existir, o Docker o cria automaticamente. Todos os arquivos que o container escrever em \texttt{/app/data} serão salvos no volume, fora do container. Se o container for deletado e um novo for iniciado com o mesmo volume, os arquivos ainda estarão lá.
+
+Volumes podem ser compartilhados entre múltiplos containers, útil para cenários como agregação de logs ou pipelines de dados.
+
+\subsubsection{Gerenciando volumes}
+
+\begin{verbatim}
+docker volume ls                    # listar todos os volumes
+docker volume rm <nome-do-volume>   # remover um volume
+docker volume prune                 # remover todos os volumes não utilizados
+\end{verbatim}
+
+Um volume só pode ser removido se não estiver conectado a nenhum container.
+
+\subsubsection{Exemplo prático com PostgreSQL}
+
+\begin{verbatim}
+# Iniciar PostgreSQL com volume para persistência
+docker run --name=db -e POSTGRES_PASSWORD=secret -d \
+    -v postgres_data:/var/lib/postgresql postgres:18
+
+# Conectar ao banco
+docker exec -ti db psql -U postgres
+
+# Dentro do psql: criar tabela e inserir dados
+CREATE TABLE tasks (
+    id SERIAL PRIMARY KEY,
+    description VARCHAR(100)
+);
+INSERT INTO tasks (description) VALUES ('Finish work'), ('Have fun');
+SELECT * FROM tasks;
+\q
+
+# Parar e remover o container
+docker stop db
+docker rm db
+
+# Iniciar NOVO container com o MESMO volume
+docker run --name=new-db -d \
+    -v postgres_data:/var/lib/postgresql postgres:18
+
+# Verificar que os dados persistiram
+docker exec -ti new-db psql -U postgres -c "SELECT * FROM tasks"
+\end{verbatim}
+
+Os dados sobrevivem à remoção do container porque estão armazenados no volume \texttt{postgres\_data}.
+
+\subsection{Bind Mounts}
+
+Bind mounts mapeiam diretamente um diretório ou arquivo do host para dentro do container. Diferente dos volumes (gerenciados pelo Docker), bind mounts apontam para um caminho específico no sistema de arquivos do host.
+
+São ideais para ambientes de desenvolvimento, onde é necessário acesso em tempo real aos arquivos entre host e container.
+
+\begin{verbatim}
+# Usando a flag -v
+docker run -v /caminho/no/host:/caminho/no/container nginx
+
+# Usando a flag --mount (recomendado pelo Docker)
+docker run --mount type=bind,source=/caminho/no/host,\
+target=/caminho/no/container nginx
+\end{verbatim}
+
+A diferença principal: com \texttt{-v}, se o diretório do host não existir, ele é criado automaticamente. Com \texttt{--mount}, o Docker retorna um erro se o diretório não existir.
+
+\subsubsection{Permissões de acesso}
+
+É possível controlar as permissões de acesso com as flags \texttt{:ro} (somente leitura) e \texttt{:rw} (leitura e escrita):
+
+\begin{verbatim}
+# Somente leitura: container pode ler mas não modificar
+docker run -v /host/config:/app/config:ro nginx
+
+# Leitura e escrita (padrão)
+docker run -v /host/data:/app/data:rw nginx
+\end{verbatim}
+
+\subsubsection{Exemplo prático com httpd (Apache)}
+
+\begin{verbatim}
+# Criar diretório e página HTML no host
+mkdir public_html
+echo '<h1>Hello from bind mount!</h1>' > public_html/index.html
+
+# Iniciar container mapeando o diretório local
+docker run -d --name my_site -p 8080:80 \
+    -v ./public_html:/usr/local/apache2/htdocs/ httpd:2.4
+\end{verbatim}
+
+Acessando \texttt{http://localhost:8080}, a página personalizada será exibida. Qualquer alteração feita no arquivo \texttt{index.html} do host será refletida imediatamente no container, e vice-versa.
+
+\subsection{Quando usar cada um}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Volume} & \textbf{Bind Mount} \\
+\hline
+Gerenciado pelo Docker & Caminho direto no host \\
+Persistência de dados de produção & Desenvolvimento e configuração \\
+Compartilhamento entre containers & Sincronização host-container \\
+Backup e migração facilitados & Acesso direto aos arquivos \\
+\hline
+\end{tabular}
+\end{center}

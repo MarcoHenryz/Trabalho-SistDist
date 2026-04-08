@@ -28,9 +28,59 @@ docker ps -a       # lista todos (incluindo os parados)
 \subsubsection{Parando containers}
 
 \begin{verbatim}
-docker ps              # obter o ID do container
 docker stop <ID>       # parar o container
 \end{verbatim}
 
 Não é necessário digitar o ID completo --- basta os caracteres suficientes para torná-lo único entre todos os containers existentes (inclusive os parados).
+
+\subsubsection{Removendo containers}
+
+\begin{verbatim}
+docker rm <ID>         # remove um container parado
+docker rm -f <ID>      # para e remove o container (força)
+\end{verbatim}
+
+O comando \texttt{docker rm} remove um container que já foi parado. A flag \texttt{-f} força a remoção mesmo que o container ainda esteja em execução --- ele é parado automaticamente antes de ser removido.
+
+\subsubsection{Visualizando logs}
+
+\begin{verbatim}
+docker logs <ID>           # exibe todos os logs do container
+docker logs -f <ID>        # segue os logs em tempo real (follow)
+docker logs --tail 50 <ID> # exibe as últimas 50 linhas
+\end{verbatim}
+
+O comando \texttt{docker logs} exibe a saída padrão (\texttt{stdout}) e a saída de erro (\texttt{stderr}) de um container. A flag \texttt{-f} mantém o terminal conectado, exibindo novos logs conforme são gerados --- semelhante ao \texttt{tail -f} no Linux. Isso é útil para monitorar o comportamento de uma aplicação em tempo real.
+
+\subsubsection{Executando comandos dentro de um container}
+
+\begin{verbatim}
+docker exec -it <ID> /bin/bash    # abre um shell interativo
+docker exec <ID> ls /app          # executa um comando único
+docker exec -it <ID> sh           # alternativa para imagens Alpine
+\end{verbatim}
+
+O comando \texttt{docker exec} permite executar comandos dentro de um container que já está em execução. A flag \texttt{-i} mantém o \texttt{stdin} aberto (interativo) e a flag \texttt{-t} aloca um terminal (TTY). Juntas, \texttt{-it} permitem interagir com o shell do container como se fosse um terminal remoto.
+
+Isso é útil para depuração, inspeção de arquivos, verificação de configurações ou execução de comandos administrativos dentro do container.
+
+\subsection{Resumo dos comandos}
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Comando} & \textbf{Função} \\
+\hline
+\texttt{docker run} & Cria e executa um container \\
+\texttt{docker ps} & Lista containers em execução \\
+\texttt{docker ps -a} & Lista todos os containers \\
+\texttt{docker stop <ID>} & Para um container \\
+\texttt{docker rm <ID>} & Remove um container parado \\
+\texttt{docker rm -f <ID>} & Para e remove um container \\
+\texttt{docker logs <ID>} & Exibe logs do container \\
+\texttt{docker logs -f <ID>} & Segue logs em tempo real \\
+\texttt{docker exec -it <ID> sh} & Abre shell dentro do container \\
+\hline
+\end{tabular}
+\end{center}
 
