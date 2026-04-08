@@ -8,23 +8,38 @@
 
 \usetheme{Madrid}
 
+% Lógica para dividir o sumário automático das seções
 \AtBeginSection[]
 {
-  \begin{frame}
-    \frametitle{Sumário}
-    \tableofcontents[currentsection]
-  \end{frame}
+  \ifnum\thesection<10
+    \begin{frame}
+      \frametitle{Sumário}
+      \tableofcontents[currentsection, sections={1-9}]
+    \end{frame}
+  \else
+    \begin{frame}
+      \frametitle{Sumário (cont.)}
+      \tableofcontents[currentsection, sections={10-19}]
+    \end{frame}
+  \fi
 }
 
 \begin{document}
 
   \frame{\titlepage}
 
+  % Sumário principal dividido em dois slides
   \begin{frame}
     \frametitle{Sumário}
-    \tableofcontents
+    \tableofcontents[sections={1-9}]
   \end{frame}
 
+  \begin{frame}
+    \frametitle{Sumário (cont.)}
+    \tableofcontents[sections={10-19}]
+  \end{frame}
+
+  % Inclusão dos arquivos de seções
   \input{01_s_plataforma}
   \input{02_s_sobredocker}
   \input{03_s_arquitetura}
