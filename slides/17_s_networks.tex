@@ -1,0 +1,118 @@
+\section{Docker Networks}
+
+\begin{frame}
+  \frametitle{Docker Networks}
+  Controlam como containers se comunicam entre si e com o mundo externo.
+
+  \vspace{0.5em}
+  Três redes criadas automaticamente na instalação:
+
+  \vspace{0.5em}
+  \begin{center}
+  \begin{tabular}{|l|l|l|}
+  \hline
+  \textbf{Nome} & \textbf{Driver} & \textbf{Descrição} \\
+  \hline
+  bridge & bridge & Rede virtual isolada (padrão) \\
+  host & host & Compartilha rede do host \\
+  none & null & Sem rede \\
+  \hline
+  \end{tabular}
+  \end{center}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Bridge (Padrão)}
+  Cria uma rede virtual privada. Containers na mesma bridge se comunicam.
+
+  \vspace{0.5em}
+  \textbf{Bridge padrão}: comunicação apenas por IP (sem DNS).
+
+  \vspace{0.5em}
+  \textbf{Bridge customizada}: resolução DNS automática por nome!
+
+  \vspace{0.5em}
+\begin{verbatim}
+docker network create minha-rede
+
+docker run -d --name web --network minha-rede nginx
+docker run -d --name api --network minha-rede myapp
+
+# "api" pode acessar "web" pelo nome:
+docker exec api curl http://web:80
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Host}
+  Remove isolamento de rede. Container compartilha a pilha de rede do host.
+
+  \vspace{0.5em}
+  \texttt{docker run -d --network host nginx}
+
+  \vspace{0.3em}
+  Nginx acessível na porta 80 do host diretamente (sem \texttt{-p}).
+
+  \vspace{0.8em}
+  \begin{columns}
+    \column{0.5\textwidth}
+      \textbf{Quando usar:}
+      \begin{itemize}
+        \item Performance máxima
+        \item Portas dinâmicas
+        \item Monitoramento de rede
+      \end{itemize}
+
+    \column{0.5\textwidth}
+      \textbf{Quando NÃO usar:}
+      \begin{itemize}
+        \item Isolamento necessário
+        \item Mesma porta em vários containers
+        \item Produção com segurança
+      \end{itemize}
+  \end{columns}
+
+  \vspace{0.5em}
+  \small \textbf{Obs}: Funciona nativamente apenas no Linux.
+\end{frame}
+
+\begin{frame}
+  \frametitle{None}
+  Desabilita completamente a rede do container.
+
+  \vspace{0.5em}
+  \texttt{docker run --network none alpine ping 8.8.8.8}
+
+  \texttt{ping: sendto: Network unreachable}
+
+  \vspace{0.8em}
+  \begin{itemize}
+    \item Apenas interface loopback (\texttt{127.0.0.1})
+    \item Sem comunicação externa
+    \item Útil para processamento local isolado
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Comandos de Rede}
+  \small
+  \texttt{docker network ls} \hspace{4em} — listar redes
+
+  \vspace{0.2em}
+  \texttt{docker network create <nome>} \hspace{0.5em} — criar rede
+
+  \vspace{0.2em}
+  \texttt{docker network inspect <nome>} — detalhes
+
+  \vspace{0.2em}
+  \texttt{docker network connect <rede> <cont.>} — conectar
+
+  \vspace{0.2em}
+  \texttt{docker network disconnect <rede> <cont.>} — desconectar
+
+  \vspace{0.2em}
+  \texttt{docker network rm <nome>} \hspace{1.5em} — remover
+
+  \vspace{0.2em}
+  \texttt{docker network prune} \hspace{3em} — remover não utilizadas
+\end{frame}

@@ -40,14 +40,49 @@
   \end{columns}
 \end{frame}
 
+\begin{frame}[fragile]
+  \frametitle{Estrutura do compose.yaml}
+  \small
+\begin{verbatim}
+services:
+  nome-do-servico:
+    image: imagem:tag
+    build: ./caminho
+    ports:
+      - "8080:80"
+    environment:
+      - VARIAVEL=valor
+    volumes:
+      - meus-dados:/app/data
+    networks:
+      - minha-rede
+    depends_on:
+      - outro-servico
+
+volumes:
+  meus-dados:
+
+networks:
+  minha-rede:
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Campos Principais do compose.yaml}
+  \begin{itemize}
+    \item \texttt{services}: define cada container da aplicação
+    \item \texttt{image}: imagem Docker a ser usada
+    \item \texttt{build}: builda a imagem a partir de um Dockerfile local
+    \item \texttt{ports}: mapeamento \texttt{HOST:CONTAINER}
+    \item \texttt{environment}: variáveis de ambiente
+    \item \texttt{volumes}: montagem de volumes ou bind mounts
+    \item \texttt{networks}: redes às quais o serviço se conecta
+    \item \texttt{depends\_on}: ordem de inicialização entre serviços
+  \end{itemize}
+\end{frame}
+
 \begin{frame}
   \frametitle{Comandos Básicos}
-  Clonar o projeto:
-
-  \vspace{0.3em}
-  \texttt{git clone https://github.com/dockersamples/todo-list-app}
-
-  \vspace{0.5em}
   Subir todos os serviços:
 
   \vspace{0.3em}
@@ -58,4 +93,13 @@
 
   \vspace{0.3em}
   \texttt{docker compose down}
+
+  \vspace{0.5em}
+  Ver status e logs:
+
+  \vspace{0.3em}
+  \texttt{docker compose ps}
+
+  \vspace{0.3em}
+  \texttt{docker compose logs -f <servico>}
 \end{frame}

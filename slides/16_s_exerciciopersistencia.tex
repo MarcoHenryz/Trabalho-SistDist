@@ -1,0 +1,65 @@
+\section{Exercício Prático: App com Persistência}
+
+\begin{frame}
+  \frametitle{Exercício: Persistência de Dados}
+  \textbf{Objetivo}: Criar um Dockerfile para uma aplicação Node.js, gerar a imagem e
+  garantir que arquivos enviados pelo usuário não sumam ao reiniciar o container.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Dockerfile da Aplicação}
+\begin{verbatim}
+FROM node:22-alpine
+WORKDIR /app
+COPY package.json ./
+RUN npm install --production
+COPY server.js ./
+RUN mkdir -p /app/uploads
+EXPOSE 3000
+CMD ["node", "server.js"]
+\end{verbatim}
+
+  \vspace{0.3em}
+  \texttt{docker build -t minha-app .}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Sem Volume: Dados Perdidos}
+\begin{verbatim}
+docker run -d -p 3000:3000 \
+  --name app-sem-volume minha-app
+# ... enviar arquivos ...
+docker rm -f app-sem-volume
+# Arquivos enviados são perdidos!
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Com Volume: Dados Persistem}
+\begin{verbatim}
+docker volume create uploads-data
+
+docker run -d -p 3000:3000 --name app-com-volume \
+  -v uploads-data:/app/uploads minha-app
+
+# ... enviar arquivos ...
+docker rm -f app-com-volume
+
+# Novo container, mesmo volume
+docker run -d -p 3000:3000 --name app-restaurado \
+  -v uploads-data:/app/uploads minha-app
+
+# Arquivos ainda estão lá!
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Conclusão}
+  \begin{block}{Regra}
+    Identificar quais diretórios contêm dados que devem sobreviver ao ciclo
+    de vida do container (uploads, bancos, logs) e montar volumes nesses diretórios.
+  \end{block}
+
+  \vspace{0.5em}
+  Mesmo que o container seja parado, removido ou recriado, os dados permanecem intactos.
+\end{frame}

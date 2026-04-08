@@ -1,0 +1,61 @@
+\section{Exercício Prático: Servidor Nginx}
+
+\begin{frame}
+  \frametitle{Exercício: Nginx}
+  \textbf{Objetivo}: Subir um servidor Nginx, alterar a página inicial via terminal
+  e monitorar os logs em tempo real.
+\end{frame}
+
+\begin{frame}
+  \frametitle{1. Subindo o Servidor}
+  \texttt{docker run -d -p 8080:80 --name meu-nginx nginx}
+
+  \vspace{0.8em}
+  \begin{itemize}
+    \item Inicia o Nginx em segundo plano
+    \item Porta 8080 do host $\rightarrow$ porta 80 do container
+    \item Acessar \texttt{http://localhost:8080} exibe a página padrão
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{2. Alterando a Página via Terminal}
+  Usando \texttt{docker exec} para acessar o shell do container:
+
+  \vspace{0.5em}
+\begin{verbatim}
+docker exec -it meu-nginx bash
+
+# Dentro do container:
+echo '<h1>Minha pagina Docker!</h1>' \
+  > /usr/share/nginx/html/index.html
+exit
+\end{verbatim}
+
+  \vspace{0.5em}
+  Recarregar \texttt{http://localhost:8080} mostra a nova página.
+
+  \vspace{0.3em}
+  \small O diretório \texttt{/usr/share/nginx/html/} é onde o Nginx serve arquivos estáticos.
+\end{frame}
+
+\begin{frame}
+  \frametitle{3. Monitorando Logs em Tempo Real}
+  \texttt{docker logs -f meu-nginx}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item \texttt{-f} segue os logs em tempo real
+    \item Cada acesso no navegador gera uma nova linha de log
+    \item \texttt{Ctrl+C} para sair
+  \end{itemize}
+
+  \vspace{0.5em}
+  Ver apenas as últimas linhas:
+
+  \vspace{0.3em}
+  \texttt{docker logs --tail 10 meu-nginx}
+
+  \vspace{0.8em}
+  \textbf{Limpeza}: \texttt{docker rm -f meu-nginx}
+\end{frame}

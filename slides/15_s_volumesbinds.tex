@@ -1,0 +1,112 @@
+\section{Volumes e Bind Mounts}
+
+\begin{frame}
+  \frametitle{O Problema da Persistência}
+  Quando um container é removido, \textbf{todas as alterações de arquivos são perdidas}.
+
+  \vspace{0.5em}
+  Exemplo: reiniciar um container de banco de dados = banco vazio.
+
+  \vspace{0.8em}
+  O Docker oferece duas soluções:
+  \begin{itemize}
+    \item \textbf{Volumes} — gerenciados pelo Docker
+    \item \textbf{Bind Mounts} — mapeiam diretório do host
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Volumes}
+  Mecanismo de armazenamento \textbf{gerenciado pelo Docker} que persiste dados independentemente do container.
+
+  \vspace{0.5em}
+  \texttt{docker volume create meus-dados}
+
+  \vspace{0.3em}
+  \texttt{docker run -d -v meus-dados:/app/data minha-imagem}
+
+  \vspace{0.8em}
+  \begin{itemize}
+    \item Se o volume não existir, Docker cria automaticamente
+    \item Dados sobrevivem à remoção do container
+    \item Podem ser compartilhados entre múltiplos containers
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Gerenciando Volumes}
+  \texttt{docker volume ls} \hspace{2.5em} — listar volumes
+
+  \vspace{0.3em}
+  \texttt{docker volume rm <nome>} \hspace{0.3em} — remover um volume
+
+  \vspace{0.3em}
+  \texttt{docker volume prune} \hspace{1.3em} — remover não utilizados
+
+  \vspace{0.5em}
+  \begin{alertblock}{Atenção}
+    Um volume só pode ser removido se não estiver conectado a nenhum container.
+  \end{alertblock}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Exemplo: PostgreSQL com Volume}
+  \small
+\begin{verbatim}
+# Iniciar com volume
+docker run --name=db -e POSTGRES_PASSWORD=secret \
+  -d -v postgres_data:/var/lib/postgresql postgres:18
+
+# Inserir dados
+docker exec -ti db psql -U postgres
+CREATE TABLE tasks (id SERIAL, description VARCHAR(100));
+INSERT INTO tasks (description) VALUES ('Finish work');
+\q
+
+# Remover e recriar
+docker stop db && docker rm db
+docker run --name=new-db -d \
+  -v postgres_data:/var/lib/postgresql postgres:18
+
+# Dados ainda estão lá!
+docker exec -ti new-db psql -U postgres \
+  -c "SELECT * FROM tasks"
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bind Mounts}
+  Mapeiam \textbf{diretamente} um diretório do host para dentro do container.
+
+  \vspace{0.5em}
+  \texttt{docker run -v ./local:/app/config nginx}
+
+  \vspace{0.3em}
+  \texttt{docker run --mount type=bind,source=./,target=/app nginx}
+
+  \vspace{0.8em}
+  \begin{itemize}
+    \item Ideais para \textbf{desenvolvimento} (acesso em tempo real)
+    \item Com \texttt{-v}: diretório criado automaticamente se não existir
+    \item Com \texttt{--mount}: erro se não existir (recomendado pelo Docker)
+  \end{itemize}
+
+  \vspace{0.5em}
+  Permissões: \texttt{:ro} (somente leitura) ou \texttt{:rw} (leitura/escrita, padrão)
+\end{frame}
+
+\begin{frame}
+  \frametitle{Volume vs Bind Mount}
+  \begin{center}
+  \begin{tabular}{|l|l|}
+  \hline
+  \textbf{Volume} & \textbf{Bind Mount} \\
+  \hline
+  Gerenciado pelo Docker & Caminho direto no host \\
+  Dados de produção & Desenvolvimento \\
+  Compartilhável & Sincronização host-container \\
+  Backup facilitado & Acesso direto aos arquivos \\
+  \hline
+  \end{tabular}
+  \end{center}
+\end{frame}

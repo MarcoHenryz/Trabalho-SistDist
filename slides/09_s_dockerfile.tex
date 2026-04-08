@@ -24,7 +24,54 @@
     \item \texttt{EXPOSE}: Indica a porta que a imagem deseja expor
     \item \texttt{USER}: Define o usuário padrão para comandos subsequentes
     \item \texttt{CMD}: Comando padrão ao iniciar o container
+    \item \texttt{ENTRYPOINT}: Executável principal do container
   \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{CMD vs ENTRYPOINT}
+  \textbf{CMD} — Define o comando padrão, mas pode ser \textbf{substituído}:
+
+  \vspace{0.3em}
+  \small
+  \texttt{CMD ["python", "app.py"]}
+
+  \texttt{docker run minha-imagem echo "outro"} $\rightarrow$ executa \texttt{echo "outro"}
+
+  \vspace{0.8em}
+  \normalsize
+  \textbf{ENTRYPOINT} — Define o executável fixo. Argumentos são \textbf{adicionados}:
+
+  \vspace{0.3em}
+  \small
+  \texttt{ENTRYPOINT ["python", "app.py"]}
+
+  \texttt{docker run minha-imagem --verbose} $\rightarrow$ executa \texttt{python app.py --verbose}
+\end{frame}
+
+\begin{frame}
+  \frametitle{CMD + ENTRYPOINT juntos}
+  Padrão mais comum: ENTRYPOINT para o executável, CMD para argumentos padrão.
+
+  \vspace{0.5em}
+  \texttt{ENTRYPOINT ["python", "app.py"]}
+
+  \texttt{CMD ["--port", "8080"]}
+
+  \vspace{0.5em}
+  \begin{itemize}
+    \item Sem argumentos: \texttt{python app.py --port 8080}
+    \item Com argumentos: \texttt{docker run img --port 3000}
+
+          $\rightarrow$ \texttt{python app.py --port 3000} (CMD substituído)
+  \end{itemize}
+
+  \vspace{0.5em}
+  \begin{block}{Resumo}
+    \texttt{ENTRYPOINT} = o ``verbo'' (o que o container faz)
+
+    \texttt{CMD} = o ``complemento'' (argumentos padrão)
+  \end{block}
 \end{frame}
 
 \begin{frame}
@@ -33,7 +80,7 @@
     \item \texttt{FROM}: Determinar a imagem base
     \item \texttt{RUN}: Instalar dependências da aplicação
     \item \texttt{COPY}: Copiar código-fonte e binários
-    \item \texttt{EXPOSE}, \texttt{USER}, \texttt{CMD}: Configurar a imagem final
+    \item \texttt{EXPOSE}, \texttt{USER}, \texttt{CMD}/\texttt{ENTRYPOINT}: Configurar a imagem final
   \end{enumerate}
 \end{frame}
 

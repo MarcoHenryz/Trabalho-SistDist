@@ -1,0 +1,119 @@
+\section{Exercício Prático: WordPress + MySQL}
+
+\begin{frame}
+  \frametitle{Exercício: WordPress + MySQL}
+  \textbf{Objetivo}: Montar um ambiente completo de WordPress com banco MySQL
+  usando Docker Compose, com rede para comunicação automática.
+
+  \vspace{0.5em}
+  Estrutura do projeto:
+
+  \vspace{0.3em}
+  \texttt{wordpress-docker/}
+
+  \texttt{  compose.yaml}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{compose.yaml — Serviço MySQL}
+  \small
+\begin{verbatim}
+services:
+  db:
+    image: mysql:8.0
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: senharoot
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wpuser
+      MYSQL_PASSWORD: wpsenha
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - wp-network
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{compose.yaml — Serviço WordPress}
+  \small
+\begin{verbatim}
+  wordpress:
+    image: wordpress:latest
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wpuser
+      WORDPRESS_DB_PASSWORD: wpsenha
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wp_data:/var/www/html
+    networks:
+      - wp-network
+    depends_on:
+      - db
+
+volumes:
+  db_data:
+  wp_data:
+
+networks:
+  wp-network:
+\end{verbatim}
+\end{frame}
+
+\begin{frame}
+  \frametitle{O que está acontecendo?}
+  \begin{itemize}
+    \item \textbf{db}: MySQL com dados persistidos via volume \texttt{db\_data}
+    \item \textbf{wordpress}: Porta 8080, conecta ao MySQL pelo hostname \texttt{db}
+    \item \texttt{depends\_on}: MySQL inicia antes do WordPress
+    \item \texttt{wp-network}: Rede customizada com DNS automático
+    \item WordPress acessa MySQL por \texttt{db:3306} — Docker resolve o nome
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Executando}
+  Subir toda a stack:
+
+  \vspace{0.3em}
+  \texttt{docker compose up -d}
+
+  \vspace{0.5em}
+  Verificar serviços:
+
+  \vspace{0.3em}
+  \texttt{docker compose ps}
+
+  \vspace{0.5em}
+  Acessar: \texttt{http://localhost:8080}
+
+  \vspace{0.5em}
+  \begin{block}{Resultado}
+    Assistente de instalação do WordPress exibido.
+    Todo o ambiente iniciado com \textbf{um único comando}.
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Derrubando o Ambiente}
+  Parar e remover (volumes preservados):
+
+  \vspace{0.3em}
+  \texttt{docker compose down}
+
+  \vspace{0.8em}
+  Parar, remover E apagar volumes:
+
+  \vspace{0.3em}
+  \texttt{docker compose down -v}
+
+  \vspace{0.8em}
+  \begin{alertblock}{Cuidado}
+    A flag \texttt{-v} remove os volumes, apagando \textbf{todos os dados}.
+    Sem ela, os dados estarão lá na próxima vez.
+  \end{alertblock}
+\end{frame}
