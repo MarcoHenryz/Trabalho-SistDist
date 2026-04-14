@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package minibib;
+
+// ─── Mensagens ───
+
+message BuscaRequest {
+  string topico = 1;
+}
+
+message BuscaReply {
+  repeated int32 numeros_itens = 1;
+}
+
+message ConsultaRequest {
+  int32 numero_item = 1;
+}
+
+message InfoLivro {
+  int32 numero_item = 1;
+  string nome = 2;
+  string topico = 3;
+  int32 estoque = 4;
+}
+
+message CompraRequest {
+  int32 numero_item = 1;
+}
+
+message CompraReply {
+  bool sucesso = 1;
+  string mensagem = 2;
+}
+
+// ─── Mensagens internas (Catálogo) ───
+
+message ConsultaPorTopicoRequest {
+  string topico = 1;
+}
+
+message ConsultaPorTopicoReply {
+  repeated int32 numeros_itens = 1;
+}
+
+message ConsultaPorItemRequest {
+  int32 numero_item = 1;
+}
+
+message AtualizacaoRequest {
+  int32 numero_item = 1;
+  int32 quantidade = 2;
+}
+
+message AtualizacaoReply {
+  bool sucesso = 1;
+  string mensagem = 2;
+}
+
+// ─── Serviços ───
+
+service ServicoCatalogo {
+  rpc ConsultaPorTopico (ConsultaPorTopicoRequest) returns (ConsultaPorTopicoReply);
+  rpc ConsultaPorItem (ConsultaPorItemRequest) returns (InfoLivro);
+  rpc Atualizar (AtualizacaoRequest) returns (AtualizacaoReply);
+}
+
+service ServicoPedidos {
+  rpc Comprar (CompraRequest) returns (CompraReply);
+}
+
+service ServicoFrontEnd {
+  rpc Buscar (BuscaRequest) returns (BuscaReply);
+  rpc Consultar (ConsultaRequest) returns (InfoLivro);
+  rpc Comprar (CompraRequest) returns (CompraReply);
+}
