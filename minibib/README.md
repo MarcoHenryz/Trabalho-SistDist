@@ -16,11 +16,16 @@ Regenerar stubs (opcional, já estão inclusos):
 python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. minibib.proto
 ```
 
-Subir os servidores (cada um em um terminal):
+Subir os servidores (cada um em um terminal separado):
 
 ```bash
+# Terminal 1
 python servidor_catalogo.py -p 50051
+
+# Terminal 2
 python servidor_pedidos.py -p 50052 --catalogo localhost:50051
+
+# Terminal 3
 python servidor_frontend.py -p 50053 --catalogo localhost:50051 --pedidos localhost:50052
 ```
 
@@ -32,47 +37,70 @@ python cliente.py --frontend localhost:50053
 
 Para máquinas separadas, substituir `localhost` pelo IP correspondente.
 
-## Decisões de Projeto
+---
 
-O catálogo é um dicionário Python indexado por número do item, com acesso O(1) para consultas por item. Busca por tópico percorre todos os itens, o que é aceitável dado o tamanho do catálogo.
+## 1. Decisões de Projeto
 
-A concorrência é tratada em duas camadas. O gRPC Python já usa `ThreadPoolExecutor` com 10 workers, então consultas simultâneas funcionam automaticamente. Para compras, o servidor de pedidos usa um `threading.Lock` que serializa a verificação de estoque + decremento, impedindo que dois clientes comprem a última cópia de um livro ao mesmo tempo. O servidor de catálogo também recusa atualizações que resultariam em estoque negativo como segunda barreira.
+### Estrutura de dados do catálogo
 
-Todos os serviços estão definidos em um único arquivo `.proto` para simplificar a geração de stubs e manter as mensagens consistentes.
+O catálogo é um dicionário Python (`dict`) indexado pelo número do item (`int`). Essa estrutura foi escolhida por oferecer acesso em tempo O(1) para `ConsultaPorItem` e `Atualizar`, que são as operações mais frequentes (chamadas por toda compra). A busca por tópico (`ConsultaPorTopico`) percorre todos os itens em O(n), o que é aceitável dado o tamanho reduzido do catálogo. Uma estrutura secundária (e.g., índice por tópico) poderia acelerar buscas, mas adicionaria complexidade desnecessária para o escopo do projeto.
 
-## Resultados Experimentais
+### Design de concorrência
 
-Os tempos foram medidos no cliente com `time.perf_counter()` antes e depois de cada chamada gRPC, capturando o round-trip completo.
+A concorrência é tratada em duas camadas independentes:
 
-### Cliente único
+**Camada 1 — Leituras paralelas:** O servidor gRPC Python usa `ThreadPoolExecutor(max_workers=10)`, o que permite que múltiplas requisições `search` e `lookup` sejam processadas simultaneamente sem bloqueio. O `threading.Lock` no `ServidorCatalogo` protege apenas as escritas no dicionário, e é adquirido por tempo mínimo, garantindo baixa contenção em leituras.
 
-| Operação | Tempo médio |
-| -------- | ----------- |
-| search   | ~12 ms      |
-| buy      | ~18 ms      |
+**Camada 2 — Serialização de compras:** O `ServidorPedidos` usa um único `threading.Lock` (`lock_compra`) que engloba o par *verificar estoque → decrementar*, tornando essa operação atômica. Isso impede que dois clientes simultâneos comprem a última cópia de um livro (race condition clássico). Como segunda barreira de segurança, o `ServidorCatalogo` também recusa qualquer atualização que resultaria em estoque negativo.
+
+### Proto único
+
+Todos os serviços (`ServicoCatalogo`, `ServicoPedidos`, `ServicoFrontEnd`) foram definidos em um único arquivo `minibib.proto`. Isso simplifica a geração de stubs (um único comando `protoc`) e garante que todas as mensagens compartilhadas (como `InfoLivro` e `CompraReply`) sejam consistentes entre os serviços.
+
+### Canais gRPC no ServidorPedidos
+
+O `ServidorPedidos` cria um novo canal para o catálogo a cada requisição (`_obter_stub_catalogo`). Isso evita problemas de estado compartilhado entre threads concorrentes e é funcional para o volume de carga esperado. Em um sistema de produção, seria preferível usar um canal persistente com pool de conexões.
+
+---
+
+## 2. Resultados Experimentais
+
+Os tempos foram medidos no cliente com `time.perf_counter()` imediatamente antes e após cada chamada gRPC, capturando o round-trip completo (serialização + rede + processamento + desserialização). Todos os testes foram executados com todos os componentes na mesma máquina (localhost), o que elimina latência de rede real — tempos reais em máquinas separadas seriam maiores dependendo da infraestrutura.
+
+Para os testes com múltiplos clientes simultâneos, o script `benchmark.py` cria N threads com canais gRPC independentes e as dispara ao mesmo tempo com `thread.start()`, medindo o tempo de cada thread individualmente.
+
+### Cliente único (20 rodadas para search, 10 para buy)
+
+| Operação | Média   | Mínimo  | Máximo  | Desvio padrão |
+|----------|---------|---------|---------|---------------|
+| `search` | 1,59 ms | 1,30 ms | 1,96 ms | 0,15 ms       |
+| `buy`    | 11,67 ms| 4,25 ms | 17,20 ms| 4,20 ms       |
+
+O `buy` é consistentemente mais lento que o `search` porque envolve duas chamadas gRPC internas (uma `ConsultaPorItem` + uma `Atualizar`) e a aquisição do lock de serialização.
 
 ### Múltiplos clientes simultâneos
 
-Para testar concorrência, o script `benchmark.py` cria N threads com canais gRPC independentes e as dispara ao mesmo tempo:
+Os benchmarks abaixo foram coletados com o script `benchmark.py`:
 
 ```bash
-python benchmark.py --op search --arg "sistemas distribuidos" --clientes 1 5 10
-python benchmark.py --op buy --arg 1 --clientes 1 5 10
+python benchmark.py --op search --arg "sistemas distribuidos" --clientes 1 5 10 --rodadas 5
+python benchmark.py --op buy --arg 1 --clientes 1 5 10 --rodadas 5
 ```
 
-| Operação | Clientes | Média  | Mín    | Máx    |
-| -------- | -------- | ------ | ------ | ------ |
-| search   | 1        | ~12 ms | ~12 ms | ~12 ms |
-| search   | 5        | ~XX ms | ~XX ms | ~XX ms |
-| search   | 10       | ~XX ms | ~XX ms | ~XX ms |
-| buy      | 1        | ~18 ms | ~18 ms | ~18 ms |
-| buy      | 5        | ~XX ms | ~XX ms | ~XX ms |
-| buy      | 10       | ~XX ms | ~XX ms | ~XX ms |
+**Search:**
 
-O `buy` é mais lento que o `search` porque envolve duas chamadas gRPC internas (consulta + atualização) e o lock de serialização. Com múltiplos clientes, o tempo do `buy` cresce mais por conta dessa serialização.
+| Clientes | Média    | Mínimo  | Máximo   | Desvio padrão |
+|----------|----------|---------|----------|---------------|
+| 1        | 1,59 ms  | 1,30 ms | 1,96 ms  | 0,15 ms       |
+| 5        | 6,10 ms  | 5,42 ms | 6,77 ms  | 0,61 ms       |
+| 10       | 28,63 ms | 7,37 ms | 74,93 ms | 31,31 ms      |
 
-## Bugs Conhecidos
+**Buy:**
 
-- O catálogo não persiste em disco; ao reiniciar o servidor, o estoque volta ao estado inicial.
-- O lock de compra serializa todas as compras mesmo de itens diferentes, o que pode ser um gargalo sob alta carga.
-- Em localhost os tempos não refletem latência de rede real.
+| Clientes | Média    | Mínimo   | Máximo    | Desvio padrão |
+|----------|----------|----------|-----------|---------------|
+| 1        | 11,67 ms | 4,25 ms  | 17,20 ms  | 4,20 ms       |
+| 5        | 18,26 ms | 9,91 ms  | 25,20 ms  | 6,23 ms       |
+| 10       | 69,95 ms | 27,28 ms | 101,07 ms | 29,35 ms      |
+
+**Análise:** O tempo de `search` escala de forma razoável até 5 clientes, mas apresenta alta variância com 10 clientes simultâneos (desvio de 31 ms), indicando contenção no ThreadPoolExecutor. O `buy` com 10 clientes tem tempo médio ~6× maior que com 1 cliente, refletindo diretamente o efeito do lock de serialização: cada thread espera as anteriores completarem o par consulta→decremento antes de prosseguir. O alto desvio padrão em ambos os casos com 10 clientes é esperado em testes de localhost, onde o escalonador do sistema operacional influencia a ordem de execução das threads.
