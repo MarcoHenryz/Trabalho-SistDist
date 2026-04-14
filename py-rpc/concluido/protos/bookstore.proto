@@ -1,0 +1,23 @@
+syntax = "proto3";
+package bookstore;
+
+service Bookstore {
+  rpc Search (SearchRequest)  returns (SearchResponse)  {}
+  rpc Lookup (LookupRequest)  returns (LookupResponse)  {}
+  rpc Buy    (BuyRequest)     returns (BuyResponse)     {}
+}
+
+message SearchRequest  { string topic       = 1; }
+message LookupRequest  { int32  item_number = 1; }
+message BuyRequest     { int32  item_number = 1; }
+
+message BookInfo {
+  int32  item_number = 1;
+  string name        = 2;
+  string topic       = 3;
+  int32  stock       = 4;
+}
+
+message SearchResponse { repeated BookInfo books = 1; }
+message LookupResponse { BookInfo book = 1; bool success = 2; }
+message BuyResponse    { bool success = 1; string message = 2; }

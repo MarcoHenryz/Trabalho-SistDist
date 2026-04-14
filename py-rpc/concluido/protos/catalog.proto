@@ -1,0 +1,33 @@
+syntax = "proto3";
+package catalog;
+
+service Catalog {
+  rpc Query (QueryRequest)   returns (QueryResponse) {}
+  rpc Update (UpdateRequest) returns (UpdateResponse) {}
+}
+
+message QueryRequest {
+  string arg = 1;   // pode ser tópico (ex: "distribuídos") ou número de item (ex: "793")
+}
+
+message BookInfo {
+  int32  item_number = 1;
+  string name        = 2;
+  string topic       = 3;
+  int32  stock       = 4;
+}
+
+message QueryResponse {
+  repeated BookInfo books = 1;  // repeated = lista
+  bool   success          = 2;
+}
+
+message UpdateRequest {
+  int32 item_number = 1;
+  int32 qty         = 2;  // negativo para decrementar
+}
+
+message UpdateResponse {
+  bool success = 1;
+  string message = 2;
+}

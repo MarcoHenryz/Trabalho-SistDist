@@ -1,0 +1,15 @@
+syntax = "proto3";
+package order;
+
+service Order {
+  rpc Buy (BuyRequest) returns (BuyResponse) {}
+}
+
+message BuyRequest {
+  int32 item_number = 1;
+}
+
+message BuyResponse {
+  bool   success = 1;
+  string message = 2;
+}
