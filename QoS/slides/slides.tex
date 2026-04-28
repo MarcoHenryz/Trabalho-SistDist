@@ -172,6 +172,77 @@
     \end{itemize}
   \end{frame}
 
+  \begin{frame}
+    \frametitle{Abordagens de QoS}
+    \begin{columns}
+      \column{0.5\textwidth}
+      \textbf{IntServ}
+      \begin{itemize}
+        \item Garantias por fluxo individual
+        \item Usa RSVP para reserva
+        \item Pouco escalável
+      \end{itemize}
+      \column{0.5\textwidth}
+      \textbf{DiffServ}
+      \begin{itemize}
+        \item Classificação por DSCP na borda
+        \item Mais escalável
+        \item Não diferencia fluxos individuais
+      \end{itemize}
+    \end{columns}
+    \vspace{0.8em}
+    \begin{block}{Componentes}
+      \textit{Admission Control} · \textit{Policing/Shaping} ·
+      \textit{Packet Classifier} · \textit{Packet Scheduler}
+    \end{block}
+  \end{frame}
+
+  % =============================================
+  \section{QoS em Redes IPv6}
+  % =============================================
+
+  \begin{frame}
+    \frametitle{IPv6 e QoS: Traffic Class e Flow Label}
+    \begin{block}{Traffic Class (TC)}
+      Diferencia prioridades de tráfego — análogo ao DSCP do IPv4.
+    \end{block}
+    \vspace{0.5em}
+    \begin{block}{Flow Label (20 bits)}
+      \begin{itemize}
+        \item<2-> Identifica fluxos da mesma origem de forma exclusiva
+        \item<3-> IP de origem + Flow Label = busca mais rápida nas tabelas
+        \item<4-> Evita \textbf{Violação de Camada} (\textit{Layer Violation})
+        \item<5-> Essencial quando pacotes trafegam criptografados
+      \end{itemize}
+    \end{block}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Controle de Admissão em IPv6}
+    \begin{block}{Controle de Admissão}
+      Decide se novo fluxo pode ser atendido sem prejudicar reservas existentes.
+    \end{block}
+    \vspace{0.5em}
+    \begin{columns}
+      \column{0.5\textwidth}
+      \textbf{Bandwidth Broker}
+      \begin{itemize}
+        \item Agente externo
+        \item Consulta banco de políticas
+        \item Verifica banda disponível
+        \item Configura roteadores
+      \end{itemize}
+      \column{0.5\textwidth}
+      \textbf{QoSbox}
+      \begin{itemize}
+        \item Roteador autônomo
+        \item Sem agente externo
+        \item Buffers por classe
+        \item Algoritmos locais de gestão
+      \end{itemize}
+    \end{columns}
+  \end{frame}
+
   % =============================================
   \section{QoS e Multimídia}
   % =============================================
@@ -188,6 +259,64 @@
       \item<5-> Aloca maior largura de banda para fluxos multimídia
       \item<6-> Enfileira pacotes para compartilhamento eficiente da rede
     \end{itemize}
+  \end{frame}
+
+  % =============================================
+  \section{Forward Error Correction (FEC)}
+  % =============================================
+
+  \begin{frame}
+    \frametitle{FEC: Conceito e Técnicas}
+    \begin{block}{O que é FEC?}
+      Insere redundância matemática nos dados. Receptor corrige erros sem
+      retransmissão.
+    \end{block}
+    \vspace{0.5em}
+    \begin{itemize}
+      \item<2-> \textbf{Distância de Hamming}: $d_{min} = 2t+1$. Inviável em redes
+        (muitos bits redundantes)
+      \item<3-> \textbf{XOR}: divide pacote em $N$ fragmentos, envia $N+1$.
+        Para $N=4$: +25\% de dados, corrige 1 fragmento perdido
+      \item<4-> \textbf{\textit{Chunk Interleaving}}: blocos horizontais enviados
+        verticalmente — cada pacote carrega fragmento de vários originais
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{FEC: Exemplo e Relação com QoS}
+    \begin{block}{Exemplo — \textit{Chunk Interleaving} em Multimídia}
+      Se pacote perdido → receptor perde apenas fragmento mínimo de cada original.
+      Fragmentos pequenos são aceitáveis em áudio/vídeo: reprodução sem interrupção.
+    \end{block}
+    \vspace{0.5em}
+    \begin{alertblock}{Relação com QoS}
+      Retransmissão inviável em tempo real (cria atraso inaceitável). FEC protege
+      \textbf{Atraso} e \textbf{Jitter}: reproduz pacotes perdidos instantaneamente
+      no destino, preservando fluidez e mantendo requisitos de QoS.
+    \end{alertblock}
+  \end{frame}
+
+  % =============================================
+  \section{Qualidade de Experiência (QoE)}
+  % =============================================
+
+  \begin{frame}
+    \frametitle{QoE — Qualidade de Experiência}
+    \begin{block}{Definição (ITU)}
+      Aceitabilidade geral de uma aplicação ou serviço conforme \alert{percebida
+      subjetivamente} pelo usuário final.
+    \end{block}
+    \vspace{0.5em}
+    \begin{itemize}
+      \item<2-> QoS: métricas técnicas objetivas (delay, jitter, packet loss)
+      \item<3-> QoE: perspectiva do usuário — \textit{``A experiência foi boa?''}
+      \item<4-> Avaliada por pesquisa/amostragem de grande número de usuários
+    \end{itemize}
+    \vspace{0.5em}
+    \begin{examples}
+      QoS alto não garante QoE alto — percepção do usuário depende de contexto,
+      expectativa e tipo de serviço.
+    \end{examples}
   \end{frame}
 
   % =============================================

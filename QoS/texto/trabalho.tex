@@ -161,6 +161,91 @@ O \textit{traffic shaping} é uma técnica de limitação de taxa que otimiza a
 Regula o fluxo de pacotes na saída, suavizando picos de tráfego e evitando
 congestionamento.
 
+\subsection{Abordagens de QoS}
+
+Dois modelos principais são utilizados para gerenciar QoS em redes IP
+\cite{ieee_ipv6qos}:
+
+\begin{itemize}
+  \item \textbf{IntServ (\textit{Integrated Services})}: fornece garantias de QoS
+  por fluxo individual para sessões de aplicações, utilizando o protocolo RSVP
+  para sinalizar e configurar o caminho. Sua principal desvantagem é a falta de
+  escalabilidade, pois a carga de armazenamento e processamento nos roteadores
+  aumenta proporcionalmente ao número de fluxos.
+  \item \textbf{DiffServ (\textit{Differentiated Services})}: o tráfego é
+  condicionado por um \textit{bandwidth broker} e classificado nas bordas da rede
+  por meio do campo DSCP. Embora mais escalável, não consegue diferenciar fluxos
+  individuais dentro de uma mesma classe.
+\end{itemize}
+
+Para implementar esses modelos, os componentes da rede são equipados com as
+seguintes funcionalidades \cite{ieee_ipv6qos}:
+
+\begin{itemize}
+  \item \textbf{Controle de Admissão (\textit{Admission Control})}: determina se
+  ainda há recursos disponíveis para um serviço solicitado e se eles podem ser
+  fornecidos em uma interface específica.
+  \item \textbf{Policiamento e Modelagem (\textit{Policing and Shaping})}: conjunto
+  de ações realizadas quando o tráfego real excede os valores negociados. Incluem
+  descarte de pacotes, rebaixamento para classe inferior ou marcação como não
+  conforme.
+  \item \textbf{Classificador de Pacotes (\textit{Packet Classifier})}: identifica
+  pacotes de um fluxo particular e os associa a uma classe de QoS. Implementado
+  nos pontos de borda (\textit{edge points}) da rede.
+  \item \textbf{Agendador de Pacotes (\textit{Packet Scheduler})}: garante que os
+  fluxos identificados recebam a Qualidade de Serviço solicitada. Também
+  implementado nos pontos de borda.
+\end{itemize}
+
+% ============================================================
+\section{QoS em Redes IPv6}
+% ============================================================
+
+O IPv6 introduz melhorias nativas para o QoS por meio de dois campos específicos
+no cabeçalho do pacote \cite{ieee_ipv6qos}:
+
+\begin{itemize}
+  \item \textbf{Traffic Class (TC)}: utilizado para diferenciar prioridades de
+  tráfego, de forma análoga ao campo DSCP do IPv4.
+  \item \textbf{Flow Label}: identificador de 20 \textit{bits} que distingue
+  fluxos originados da mesma fonte de forma exclusiva.
+\end{itemize}
+
+A combinação do endereço IP de origem com o \textit{Flow Label} resulta em um
+tempo menor de busca nas tabelas dos roteadores, minimizando o atraso de
+processamento.
+
+\subsection{Flow Label}
+
+Atribuir um valor de \textit{Flow Label} aos pacotes permite que a rede os
+classifique utilizando apenas a semântica de IP, agilizando o processamento
+\cite{ieee_ipv6qos}. Isso evita o problema da \textbf{Violação de Camada}
+(\textit{Layer Violation}) — a prática de extrair dados das camadas de aplicação
+superiores para processar pacotes. Evitar essa violação é essencial quando os
+pacotes trafegam criptografados ou com os números de porta ocultos.
+
+\subsection{Controle de Admissão em IPv6}
+
+O controle de admissão é o algoritmo que decide se um novo fluxo pode ser
+atendido pela rede sem prejudicar as reservas já existentes. Avalia a carga atual,
+os recursos solicitados e as regras da política do serviço \cite{ieee_ipv6qos}.
+
+\subsubsection{Bandwidth Broker}
+
+O \textit{Bandwidth Broker} é um agente que aloca serviços para usuários e
+configura os roteadores. Ele consulta um banco de dados de políticas, verifica se
+há largura de banda suficiente, aprova a requisição do fluxo e configura o
+roteador para aceitar o pacote \cite{ieee_ipv6qos}.
+
+\subsubsection{QoSbox}
+
+O QoSbox é um roteador configurável que adapta ativamente suas decisões de
+policiamento e agendamento de acordo com a chegada instantânea do tráfego. Ao
+contrário do \textit{Bandwidth Broker}, não depende de agentes externos: utiliza
+\textit{buffers} por classe e algoritmos locais para gerenciar atrasos e descartar
+pacotes quando necessário, mantendo o nível de serviço das demais classes
+\cite{ieee_ipv6qos}.
+
 % ============================================================
 \section{QoS e Multimídia}
 % ============================================================
@@ -185,6 +270,71 @@ O QoS contribui para aplicações multimídia das seguintes formas
   \item Otimiza o uso de recursos ao agendar e enfileirar pacotes, permitindo que
   dados multimídia e outros dados compartilhem a rede de forma eficiente.
 \end{itemize}
+
+% ============================================================
+\section{Forward Error Correction (FEC)}
+% ============================================================
+
+O \textit{Forward Error Correction} (FEC) é uma técnica que fornece ao receptor
+a capacidade de corrigir erros e reproduzir pacotes de forma imediata
+\cite{geeksforgeeksfec2024}. O conceito central é a inserção prévia de redundância
+matemática nos dados enviados, eliminando a necessidade de um canal reverso para
+solicitar a retransmissão de informações perdidas ou corrompidas.
+
+Três técnicas principais de FEC são utilizadas \cite{geeksforgeeksfec2024}:
+
+\begin{itemize}
+  \item \textbf{Distância de Hamming}: método matemático onde a distância mínima
+  para corrigir $t$ erros é definida por $d_{min} = 2t+1$. Raramente usada em
+  redes por exigir uma quantidade inviável de \textit{bits} redundantes.
+  \item \textbf{XOR}: recria pacotes perdidos por meio da propriedade
+  ou-exclusivo. Um pacote é dividido em $N$ fragmentos; a operação XOR é calculada
+  entre eles e a rede envia $N+1$ fragmentos. Para $N=4$, envia-se 25\% de dados
+  adicionais, permitindo corrigir a perda de um dos quatro fragmentos.
+  \item \textbf{Entrelaçamento de Fragmentos (\textit{Chunk Interleaving})}: cada
+  pacote é dividido em pequenos blocos criados horizontalmente, mas enviados
+  verticalmente. Cada pacote transmitido carrega um pequeno pedaço de vários
+  pacotes originais diferentes.
+\end{itemize}
+
+\subsection{Exemplo de Uso}
+
+O FEC é amplamente utilizado em comunicações multimídia de tempo real
+\cite{geeksforgeeksfec2024}. Com a técnica de \textit{Chunk Interleaving}, se um
+pacote for completamente perdido durante a transmissão, o receptor perderá apenas
+um fragmento muito pequeno de cada pacote original. Como pequenos fragmentos
+ausentes são normalmente aceitáveis em fluxos de áudio ou vídeo, a reprodução
+continua sem interrupções perceptíveis.
+
+\subsection{Relação com QoS}
+
+A retransmissão de pacotes perdidos é inviável em aplicações de tempo real, pois
+gera um atraso inaceitável na reprodução \cite{geeksforgeeksfec2024}. A principal
+relação do FEC com o QoS está na capacidade de proteger os parâmetros de
+\textbf{Atraso} e \textbf{Variação de Atraso (Jitter)}: ao reproduzir pacotes
+perdidos diretamente no destino de forma imediata, o FEC preserva a fluidez da
+aplicação e mantém os requisitos de tráfego, evitando a degradação da Qualidade
+de Serviço.
+
+% ============================================================
+\section{Qualidade de Experiência (QoE)}
+% ============================================================
+
+A \textbf{Qualidade de Experiência} (QoE, do inglês \textit{Quality of
+Experience}) é uma medida do nível geral de satisfação e experiência de um
+usuário com um produto ou serviço \cite{techtargetqoe2024}. A União Internacional
+de Telecomunicações define QoE como a aceitabilidade geral de uma aplicação ou
+serviço, conforme percebida subjetivamente pelo usuário final.
+
+Embora relacionados, QoS e QoE não são o mesmo conceito. O QoS refere-se às
+métricas técnicas e objetivas da rede — atraso, jitter, perda de pacotes —
+enquanto o QoE adota a perspectiva do usuário final, buscando responder à
+pergunta: \textit{``Este serviço entregou uma experiência boa o suficiente?''}
+\cite{techtargetqoe2024}.
+
+O método mais comum para avaliar o QoE é pesquisar ou amostrar um grande número
+de usuários, coletando percepções subjetivas sobre a qualidade do serviço
+recebido.
 
 % ============================================================
 \section{Vantagens e Melhores Práticas}
