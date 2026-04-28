@@ -1,0 +1,230 @@
+\documentclass{beamer}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage{url}
+
+\title{Qualidade de Serviço (QoS)}
+\subtitle{Redes de Computadores}
+\author[Marco, DKM]{Marco Henry\inst{1} \and Danilo Kotaka\inst{2}}
+\institute[UEL]{Universidade Estadual De Londrina}
+\date{\today}
+
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Sumário}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\usetheme{Szeged}
+
+\begin{document}
+
+  \frame{\titlepage}
+
+  \begin{frame}
+    \frametitle{Sumário}
+    \tableofcontents
+  \end{frame}
+
+  % =============================================
+  \section{Introdução}
+  % =============================================
+
+  \begin{frame}
+    \frametitle{Contexto Histórico}
+    \begin{itemize}
+      \item<1-> Redes separadas: voz em circuitos dedicados, dados em redes distintas
+      \item<2-> Convergência: voz, vídeo e dados na mesma infraestrutura
+      \item<3-> Apps interativas (VoIP, streaming, videoconferência) exigem qualidade garantida
+      \item<4-> IoT amplia a demanda: sensores industriais precisam de comunicação em tempo real
+    \end{itemize}
+  \end{frame}
+
+  % =============================================
+  \section{Definição de QoS}
+  % =============================================
+
+  \begin{frame}
+    \frametitle{O que é QoS?}
+    \begin{block}{Definição}
+      \textbf{Qualidade de Serviço (QoS)} é o uso de mecanismos e tecnologias
+      que atuam em uma rede para controlar o tráfego e assegurar a boa
+      \textit{performance} de aplicações críticas com capacidade de rede
+      limitada.
+    \end{block}
+    \vspace{0.5em}
+    \begin{itemize}
+      \item<2-> Marca pacotes para identificar tipos de serviço
+      \item<3-> Cria filas virtuais separadas por prioridade
+      \item<4-> Reserva largura de banda para aplicações críticas
+    \end{itemize}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Serviços que Requerem QoS}
+    \begin{columns}
+      \column{0.5\textwidth}
+      \begin{itemize}
+        \item IPTV
+        \item \textit{Online gaming}
+        \item \textit{Streaming} de mídia
+      \end{itemize}
+      \column{0.5\textwidth}
+      \begin{itemize}
+        \item Videoconferência
+        \item Video on Demand (VOD)
+        \item Voice over IP (VoIP)
+      \end{itemize}
+    \end{columns}
+    \vspace{1em}
+    \begin{alertblock}{Por quê?}
+      Esses serviços são \textbf{inelásticos}: têm requisitos mínimos de largura
+      de banda e são altamente sensíveis a atraso e jitter.
+    \end{alertblock}
+  \end{frame}
+
+  % =============================================
+  \section{Elementos Avaliados}
+  % =============================================
+
+  \begin{frame}
+    \frametitle{Largura de Banda e Atraso}
+    \begin{block}{Largura de Banda (\textit{Bandwidth})}
+      Capacidade máxima do enlace. QoS aloca banda por fila de tráfego.
+    \end{block}
+    \vspace{0.5em}
+    \begin{block}{Atraso (\textit{Delay} / Latência)}
+      Tempo de entrega origem-destino. Afetado por \textit{queuing delay} em
+      congestionamentos.
+      \begin{itemize}
+        \item Em VoIP: latência alta causa sobreposição de áudio
+        \item QoS cria filas de prioridade para reduzir atraso
+      \end{itemize}
+    \end{block}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Variação de Atraso (Jitter)}
+    \begin{block}{Jitter}
+      Irregularidade na velocidade de chegada dos pacotes. Causa quebras em
+      áudio e vídeo.
+    \end{block}
+    \vspace{0.5em}
+    \begin{block}{Buffer de Jitter (\textit{Playout Buffer})}
+      Armazena pacotes temporariamente e os entrega em intervalos uniformes.
+      \begin{itemize}
+        \item<2-> \textbf{Estático}: tamanho fixo, configurado manualmente
+        \item<3-> \textbf{Adaptativo}: ajusta tamanho conforme condições da rede
+        \item<4-> Trade-off: adiciona latência constante, elimina variação
+        \item<5-> VoIP: tipicamente 50--150 ms de buffer de áudio
+      \end{itemize}
+    \end{block}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Perda de Pacotes e Outras Métricas}
+    \begin{block}{Perda de Pacotes (\textit{Packet Loss})}
+      \begin{itemize}
+        \item Causada por congestionamento — roteadores descartam pacotes
+        \item QoS define \textbf{quais} pacotes descartar (prioridade)
+        \item Em tempo real: causa jitter e travamentos de fala/vídeo
+      \end{itemize}
+    \end{block}
+    \vspace{0.5em}
+    \begin{block}{Outras Métricas}
+      \begin{itemize}
+        \item \textbf{MOS}: qualidade de áudio, escala 1--5
+        \item \textbf{Throughput}: taxa de entrega bem-sucedida de dados
+        \item \textbf{Error Rate}: frequência de pacotes corrompidos
+      \end{itemize}
+    \end{block}
+  \end{frame}
+
+  % =============================================
+  \section{Técnicas de QoS}
+  % =============================================
+
+  \begin{frame}
+    \frametitle{Técnicas de QoS}
+    \begin{itemize}
+      \item<1-> \textbf{Marcação de Tráfego}
+        \begin{itemize}
+          \item CoS: marca no cabeçalho do frame (camada 2)
+          \item DSCP: marca no cabeçalho do pacote (camada 3)
+        \end{itemize}
+      \item<2-> \textbf{Filas (\textit{Queuing})}
+        \begin{itemize}
+          \item \textit{Priority queuing}: filas dedicadas por prioridade
+          \item Reduz chances de descarte para tráfego crítico
+        \end{itemize}
+      \item<3-> \textbf{RSVP} (\textit{Resource Reservation Protocol})
+        \begin{itemize}
+          \item Protocolo de sinalização de camada de rede
+          \item Reserva recursos antes de iniciar transmissão
+        \end{itemize}
+      \item<4-> \textbf{\textit{Traffic Shaping}}
+        \begin{itemize}
+          \item Limita taxa de saída, suaviza picos de tráfego
+        \end{itemize}
+    \end{itemize}
+  \end{frame}
+
+  % =============================================
+  \section{QoS e Multimídia}
+  % =============================================
+
+  \begin{frame}
+    \frametitle{QoS e Multimídia}
+    Tráfego de áudio e vídeo é \alert{altamente sensível} a delay, jitter,
+    packet loss e largura de banda.
+    \vspace{0.5em}
+    \begin{itemize}
+      \item<2-> Prioriza VoIP, videochamadas e \textit{live stream}
+      \item<3-> Controla latência e jitter para sincronização A/V
+      \item<4-> Reduz perda de pacotes priorizando mídia em congestionamento
+      \item<5-> Aloca maior largura de banda para fluxos multimídia
+      \item<6-> Enfileira pacotes para compartilhamento eficiente da rede
+    \end{itemize}
+  \end{frame}
+
+  % =============================================
+  \section{Vantagens e Melhores Práticas}
+  % =============================================
+
+  \begin{frame}
+    \frametitle{Vantagens do QoS}
+    \begin{enumerate}
+      \item<1-> Priorização de aplicações críticas
+      \item<2-> Melhor gerenciamento de recursos de rede
+      \item<3-> Melhora da experiência do usuário
+      \item<4-> Gerenciamento de tráfego ponto a ponto
+      \item<5-> Prevenção de perda de pacotes
+      \item<6-> Redução de latência
+    \end{enumerate}
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{Melhores Práticas}
+    \begin{itemize}
+      \item<1-> Não definir limites de banda muito baixos (evita descarte excessivo)
+      \item<2-> Considerar distribuição de pacotes entre filas
+      \item<3-> Garantias de banda apenas em serviços específicos
+      \item<4-> Priorizar por \textbf{um único tipo} (serviço OU política de segurança)
+      \item<5-> Minimizar complexidade da configuração
+      \item<6-> Usar UDP para testes, não superalocar throughput
+    \end{itemize}
+  \end{frame}
+
+  % =============================================
+  \section*{Referências}
+  % =============================================
+
+  \begin{frame}[allowframebreaks]
+    \frametitle{Referências}
+    \bibliography{bibliografia}
+    \bibliographystyle{alpha}
+  \end{frame}
+
+\end{document}
