@@ -12,9 +12,7 @@ def executar(endereco_frontend: str):
     canal = grpc.insecure_channel(endereco_frontend)
     stub = minibib_pb2_grpc.ServicoFrontEndStub(canal)
 
-    print("=" * 50)
-    print("  Minibib.com — A menor livraria online do mundo")
-    print("=" * 50)
+    print("Minibib.com")
     print()
     print("Comandos disponíveis:")
     print("  search <tópico>           — busca livros por tópico")
@@ -27,7 +25,7 @@ def executar(endereco_frontend: str):
         try:
             entrada = input("minibib> ").strip()
         except (EOFError, KeyboardInterrupt):
-            print("\nAté mais!")
+            print("\nTchau")
             break
 
         if not entrada:
@@ -38,7 +36,6 @@ def executar(endereco_frontend: str):
         argumento = partes[1] if len(partes) > 1 else ""
 
         if comando in ("quit", "exit", "sair"):
-            print("Até mais!")
             break
 
         elif comando == "search":
@@ -50,7 +47,9 @@ def executar(endereco_frontend: str):
                 resp = stub.Buscar(minibib_pb2.BuscaRequest(topico=argumento))
                 tempo = (time.perf_counter() - inicio) * 1000
                 if resp.numeros_itens:
-                    print(f"Itens encontrados para '{argumento}': {list(resp.numeros_itens)}")
+                    print(
+                        f"Itens encontrados para '{argumento}': {list(resp.numeros_itens)}"
+                    )
                 else:
                     print(f"Nenhum item encontrado para o tópico '{argumento}'.")
                 print(f"  (tempo: {tempo:.2f} ms)")
@@ -103,7 +102,11 @@ def executar(endereco_frontend: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Cliente Minibib")
-    parser.add_argument("--frontend", type=str, default="localhost:50053",
-                        help="Endereço do front-end (padrão: localhost:50053)")
+    parser.add_argument(
+        "--frontend",
+        type=str,
+        default="localhost:50053",
+        help="Endereço do front-end (padrão: localhost:50053)",
+    )
     args = parser.parse_args()
     executar(args.frontend)

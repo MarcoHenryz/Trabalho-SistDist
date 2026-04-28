@@ -62,13 +62,23 @@ def iniciar(porta: int, endereco_catalogo: str):
     )
     servidor.add_insecure_port(f"[::]:{porta}")
     servidor.start()
-    print(f"[ServidorPedidos] Rodando na porta {porta} | Catálogo em {endereco_catalogo}")
+    print(
+        f"[ServidorPedidos] Rodando na porta {porta} | Catálogo em {endereco_catalogo}"
+    )
     servidor.wait_for_termination()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Servidor de Pedidos")
-    parser.add_argument("-p", "--porta", type=int, default=50052, help="Porta do servidor (padrão: 50052)")
-    parser.add_argument("--catalogo", type=str, required=True, help="Endereço do catálogo (host:porta)")
+    parser.add_argument(
+        "-p",
+        "--porta",
+        type=int,
+        default=50052,
+        help="Porta do servidor (padrão: 50052)",
+    )
+    parser.add_argument(
+        "--catalogo", type=str, required=True, help="Endereço do catálogo (host:porta)"
+    )
     args = parser.parse_args()
     iniciar(args.porta, args.catalogo)

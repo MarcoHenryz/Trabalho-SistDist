@@ -9,23 +9,53 @@ import minibib_pb2
 import minibib_pb2_grpc
 
 
-# ─── Dados iniciais ───
-
 CATALOGO_INICIAL = [
-    {"numero_item": 1, "nome": "How to get a good grade in DOS",              "topico": "sistemas distribuidos", "estoque": 10},
-    {"numero_item": 2, "nome": "RPCs for Noobs",                              "topico": "sistemas distribuidos", "estoque": 10},
-    {"numero_item": 3, "nome": "Xen and the Art of Surviving Graduate School", "topico": "pos-graduacao",        "estoque": 5},
-    {"numero_item": 4, "nome": "Cooking for the Impatient Graduate Student",   "topico": "pos-graduacao",        "estoque": 8},
-    {"numero_item": 5, "nome": "Socket Programming for Dummies",               "topico": "autoajuda",            "estoque": 15},
-    {"numero_item": 6, "nome": "The Art of Computer Programming",              "topico": "ciencia da computacao", "estoque": 3},
-    {"numero_item": 7, "nome": "Spring in Action",                             "topico": "ciencia da computacao", "estoque": 7},
+    {
+        "numero_item": 1,
+        "nome": "livro 1 super mario",
+        "topico": "sistemas distribuidos",
+        "estoque": 10,
+    },
+    {
+        "numero_item": 2,
+        "nome": "livro 2 batman",
+        "topico": "sistemas distribuidos",
+        "estoque": 10,
+    },
+    {
+        "numero_item": 3,
+        "nome": "Livro 3 de teste",
+        "topico": "pos-graduacao",
+        "estoque": 5,
+    },
+    {
+        "numero_item": 4,
+        "nome": "livro 4 superman",
+        "topico": "pos-graduacao",
+        "estoque": 8,
+    },
+    {"numero_item": 5, "nome": "livro 5 luigi", "topico": "autoajuda", "estoque": 15},
+    {
+        "numero_item": 6,
+        "nome": "livro 6 muahahaha",
+        "topico": "ciencia da computacao",
+        "estoque": 3,
+    },
+    {
+        "numero_item": 7,
+        "nome": "livro 7 seja feliz",
+        "topico": "ciencia da computacao",
+        "estoque": 7,
+    },
 ]
 
 
 class ServidorCatalogo(minibib_pb2_grpc.ServicoCatalogoServicer):
     def __init__(self):
         self.lock = threading.Lock()
-        self.catalogo = {livro["numero_item"]: dict(livro) for livro in CATALOGO_INICIAL}
+        self.catalogo = {
+            livro["numero_item"]: dict(livro) for livro in CATALOGO_INICIAL
+        }
 
     def ConsultaPorTopico(self, request, context):
         with self.lock:
@@ -82,6 +112,12 @@ def iniciar(porta: int):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Servidor de Catálogo")
-    parser.add_argument("-p", "--porta", type=int, default=50051, help="Porta do servidor (padrão: 50051)")
+    parser.add_argument(
+        "-p",
+        "--porta",
+        type=int,
+        default=50051,
+        help="Porta do servidor (padrão: 50051)",
+    )
     args = parser.parse_args()
     iniciar(args.porta)

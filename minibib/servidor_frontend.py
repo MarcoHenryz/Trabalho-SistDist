@@ -64,8 +64,21 @@ def iniciar(porta: int, endereco_catalogo: str, endereco_pedidos: str):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Servidor Front-End")
-    parser.add_argument("-p", "--porta", type=int, default=50053, help="Porta do servidor (padrão: 50053)")
-    parser.add_argument("--catalogo", type=str, required=True, help="Endereço do catálogo (host:porta)")
-    parser.add_argument("--pedidos", type=str, required=True, help="Endereço do servidor de pedidos (host:porta)")
+    parser.add_argument(
+        "-p",
+        "--porta",
+        type=int,
+        default=50053,
+        help="Porta do servidor (padrão: 50053)",
+    )
+    parser.add_argument(
+        "--catalogo", type=str, required=True, help="Endereço do catálogo (host:porta)"
+    )
+    parser.add_argument(
+        "--pedidos",
+        type=str,
+        required=True,
+        help="Endereço do servidor de pedidos (host:porta)",
+    )
     args = parser.parse_args()
     iniciar(args.porta, args.catalogo, args.pedidos)
