@@ -1,0 +1,233 @@
+% ============================================================
+\section{Definição de Qualidade de Serviço}
+% ============================================================
+
+A Qualidade de Serviço (QoS) é o uso de mecanismos e tecnologias que atuam em
+uma rede com o objetivo de controlar o tráfego e assegurar a boa
+\textit{performance} de aplicações críticas mesmo diante de capacidade de rede
+limitada \cite{fortinet2024}. Isso permite que organizações ajustem o tráfego de
+rede priorizando o desempenho das aplicações mais importantes.
+
+\subsection{Funcionamento Básico}
+
+Quando computadores enviam e recebem informações em uma rede, essas informações
+são organizadas em \textbf{pacotes}. O QoS funciona \textbf{marcando pacotes}
+para identificar os tipos de serviço e, em seguida, \textbf{configurando
+roteadores} para criar filas virtuais separadas para cada aplicação, baseadas em
+prioridade \cite{fortinet2024}. Como resultado, largura de banda é reservada para
+aplicações críticas ou de maior prioridade na fila.
+
+Uma ferramenta de QoS observa o cabeçalho (\textit{header}) do pacote para
+decidir quais pacotes priorizar. O cabeçalho contém informações sobre o tipo de
+dado transportado, o destino na rede e a finalidade do pacote
+\cite{techtarget2024}.
+
+\subsection{Serviços que Requerem QoS}
+
+O QoS é comumente aplicado em redes que possuem tráfego de sistemas que requerem
+alta quantidade de recursos. Entre os principais serviços que se beneficiam do
+QoS, destacam-se \cite{fortinet2024}:
+
+\begin{itemize}
+  \item \textit{Internet Protocol Television} (IPTV)
+  \item \textit{Online gaming}
+  \item \textit{Streaming} de mídia
+  \item Videoconferência
+  \item \textit{Video on Demand} (VOD)
+  \item \textit{Voice over IP} (VoIP)
+\end{itemize}
+
+% ============================================================
+\section{Elementos Avaliados}
+% ============================================================
+
+Para garantir a qualidade de serviço, é necessário monitorar e controlar um
+conjunto de parâmetros de rede. A seguir são descritos os principais elementos
+avaliados pelo QoS \cite{geeksforgeeks2024}.
+
+\subsection{Largura de Banda}
+
+A \textbf{largura de banda} (\textit{bandwidth}) é a capacidade máxima que um
+enlace de rede possui para transmitir a maior quantidade de dados de um ponto a
+outro no menor tempo possível \cite{fortinet2024}. O QoS instrui o roteador sobre
+como utilizar essa largura de banda — por exemplo, alocando determinada
+quantidade para diferentes filas por tipo de tráfego.
+
+\subsection{Atraso}
+
+O \textbf{atraso} (\textit{delay} ou latência) é o tempo que um pacote leva da
+sua origem até o destino \cite{fortinet2024}. Pode ser afetado pelo
+\textit{queuing delay} (atraso na fila), que ocorre em períodos de
+congestionamento. O QoS reduz o atraso criando filas de prioridade para certos
+tipos de tráfego. A latência idealmente deve ser a menor possível; em serviços de
+VoIP, por exemplo, muita latência pode causar sobreposição dos áudios durante uma
+conversa.
+
+\subsection{Variação de Atraso (Jitter)}
+
+O \textbf{jitter} (variação de atraso) é a irregularidade na velocidade de
+chegada dos pacotes na rede, resultante do congestionamento \cite{fortinet2024}.
+Pacotes podem chegar atrasados ou fora de ordem, gerando quebras em áudios e
+vídeos transmitidos.
+
+\subsubsection{Uso de Buffer para Redução de Jitter}
+
+Uma técnica amplamente utilizada para mitigar o jitter é o emprego de
+\textbf{buffers de jitter} (também chamados de \textit{playout buffers}). Esses
+buffers são áreas de armazenamento temporário que coletam os pacotes recebidos,
+armazenam-nos por um breve período e os encaminham ao processador em intervalos
+uniformes, compensando a variação de atraso antes da reprodução.
+
+Existem dois tipos principais de buffer de jitter:
+
+\begin{itemize}
+  \item \textbf{Buffer estático}: possui tamanho fixo, configurado manualmente
+  pelo administrador. Simples de implementar, mas não se adapta a variações nas
+  condições da rede.
+  \item \textbf{Buffer adaptativo}: ajusta dinamicamente seu tamanho com base nas
+  condições atuais da rede. Mais eficiente em ambientes com jitter variável.
+\end{itemize}
+
+O uso de buffer introduz uma latência constante e previsível, que é preferível à
+variação imprevisível causada pelo jitter. Em aplicações VoIP, por exemplo, o
+buffer tipicamente retém entre 50 ms e 150 ms de áudio para absorver as variações
+de chegada dos pacotes sem causar interrupções perceptíveis na chamada.
+
+\subsection{Perda de Pacotes}
+
+A \textbf{perda de pacotes} (\textit{packet loss}) é a quantidade de dados
+perdidos por conta de pacotes descartados, normalmente causada por congestionamento
+na rede \cite{fortinet2024}. Quando o tráfego excede a capacidade dos roteadores e
+switches, estes começam a descartar pacotes para conseguir lidar com a carga.
+
+O QoS permite que as organizações definam \textbf{quais pacotes descartar} quando
+isso ocorre, priorizando o tráfego crítico. Os pacotes geralmente são descartados
+quando a fila de espera ultrapassa seu limite máximo. Em comunicações em tempo
+real — seja vídeo ou áudio — a perda de pacotes pode causar jitter e travamentos
+na fala \cite{fortinet2024}.
+
+\subsection{Outras Métricas}
+
+Além dos parâmetros principais, o QoS também avalia \cite{fortinet2024,techtarget2024}:
+
+\begin{itemize}
+  \item \textbf{Avaliação Média de Opinião (MOS)}: métrica para medir a qualidade
+  do áudio usando escala de 1 a 5, onde 5 representa a melhor qualidade.
+  \item \textbf{Capacidade de Processamento (\textit{Throughput})}: medida do
+  sucesso na entrega de dados na rede.
+  \item \textbf{\textit{Error Rate}}: mede a frequência de arquivos corrompidos e
+  perdas de pacote durante a transmissão.
+\end{itemize}
+
+% ============================================================
+\section{Técnicas de QoS}
+% ============================================================
+
+Diversas técnicas são empregadas para implementar QoS em redes modernas
+\cite{fortinet2024,techtarget2024}.
+
+\subsection{Marcação de Tráfego (\textit{Traffic Marking})}
+
+O tráfego prioritário precisa ser identificado antes de ser tratado. A marcação
+é realizada por meio de:
+
+\begin{itemize}
+  \item \textbf{CoS (\textit{Class of Service})}: marca o fluxo no cabeçalho do
+  frame de camada 2.
+  \item \textbf{DSCP (\textit{Differentiated Services Code Point})}: marca o fluxo
+  no cabeçalho do pacote de camada 3.
+\end{itemize}
+
+\subsection{Filas (\textit{Queuing})}
+
+O processo de \textit{queuing} cria políticas que fornecem tratamento preferencial
+a certos fluxos. As filas são buffers de alta \textit{performance} em roteadores e
+switches \cite{fortinet2024}. Pacotes com prioridade mais alta são movidos para uma
+fila dedicada que transmite dados mais rapidamente, reduzindo as chances de
+descarte. O \textit{priority queuing} garante disponibilidade e mínima latência para
+as aplicações mais importantes.
+
+\subsection{RSVP (\textit{Resource Reservation Protocol})}
+
+O RSVP é um protocolo da camada de transporte que reserva recursos ao longo de
+uma rede para garantir níveis específicos de QoS para fluxos de dados de
+aplicações \cite{fortinet2024}. Permite que aplicações solicitem uma reserva de
+largura de banda antes de iniciar a transmissão.
+
+\subsection{\textit{Traffic Shaping}}
+
+O \textit{traffic shaping} é uma técnica de limitação de taxa que otimiza a
+\textit{performance} e aumenta a largura de banda utilizável \cite{fortinet2024}.
+Regula o fluxo de pacotes na saída, suavizando picos de tráfego e evitando
+congestionamento.
+
+% ============================================================
+\section{QoS e Multimídia}
+% ============================================================
+
+A qualidade de serviço é essencial para serviços multimídia porque o tráfego de
+áudio e vídeo é muito sensível ao atraso, variação de atraso (jitter), perda de
+pacotes e à largura de banda disponível \cite{geeksforgeeks2024}. Qualquer
+degradação nesses parâmetros resulta em quebras, travamentos e áudio
+ininteligível.
+
+O QoS contribui para aplicações multimídia das seguintes formas
+\cite{fortinet2024,geeksforgeeks2024}:
+
+\begin{itemize}
+  \item Prioriza serviços como VoIP, chamadas de vídeo e \textit{live stream}
+  para evitar interrupções.
+  \item Controla a latência e o jitter para manter áudio e vídeo sincronizados.
+  \item Reduz a perda de pacotes priorizando pacotes de mídia durante períodos de
+  congestionamento.
+  \item Aloca mais largura de banda para fluxos de dados multimídia, permitindo
+  maior \textit{bitrate} sem prejudicar outros tráfegos críticos.
+  \item Otimiza o uso de recursos ao agendar e enfileirar pacotes, permitindo que
+  dados multimídia e outros dados compartilhem a rede de forma eficiente.
+\end{itemize}
+
+% ============================================================
+\section{Vantagens e Melhores Práticas}
+% ============================================================
+
+\subsection{Vantagens do QoS}
+
+A adoção de QoS traz diversos benefícios às organizações \cite{fortinet2024}:
+
+\begin{enumerate}
+  \item \textbf{Priorização de aplicações}: garante que as aplicações mais
+  críticas sempre terão os recursos necessários para atingir alta
+  \textit{performance}.
+  \item \textbf{Melhor gerenciamento de recursos}: permite que administradores
+  gerenciem melhor os recursos de rede, reduzindo custos e a necessidade de
+  expansões de enlace.
+  \item \textbf{Melhora da experiência do usuário}: o objetivo final é garantir a
+  alta \textit{performance} das aplicações críticas, culminando em maior
+  produtividade.
+  \item \textbf{Gerenciamento de tráfego ponto a ponto}: permite entregar pacotes
+  em ordem de um ponto a outro na internet, sem sofrer perda de pacotes.
+  \item \textbf{Prevenção de perda de pacotes}: o QoS evita a perda priorizando a
+  largura de banda para aplicações de alta \textit{performance}.
+  \item \textbf{Redução de latência}: o QoS reduz a latência ao priorizar as
+  aplicações críticas na fila de processamento.
+\end{enumerate}
+
+\subsection{Melhores Práticas}
+
+Para uma configuração eficaz de QoS, recomenda-se \cite{fortinet2024}:
+
+\begin{enumerate}
+  \item Não definir limites de largura de banda máxima muito baixos na interface
+  de origem, para evitar descarte excessivo de pacotes.
+  \item Considerar a razão de distribuição de pacotes entre as filas disponíveis e
+  quais filas são usadas por quais serviços, pois isso afeta latência e
+  distribuição de fila.
+  \item Aplicar garantias de largura de banda apenas em serviços específicos,
+  evitando que todo o tráfego use a mesma fila em situações de alto volume.
+  \item Configurar a priorização por \textbf{um único tipo}: ou por prioridade
+  baseada em serviço, ou por prioridade de política de segurança — não ambos.
+  \item Minimizar a complexidade da configuração de QoS para garantir alta
+  \textit{performance}.
+  \item Para resultados de teste precisos, usar o UDP e não superalocar o
+  \textit{throughput} de largura de banda.
+\end{enumerate}
