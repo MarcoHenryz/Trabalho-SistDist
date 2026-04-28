@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.4.21)  28 APR 2026 15:54
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.4.21)  28 APR 2026 17:23
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -461,11 +461,11 @@ pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has b
                    \relax 
 l.10   \newpage
                 [1] (./introducao.tex) [2] (./trabalho.tex [3{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}] [4]
-Overfull \hbox (19.8134pt too wide) in paragraph at lines 126--128
+Overfull \hbox (26.33958pt too wide) in paragraph at lines 126--128
 \T1/cmr/m/n/12 Diversas téc-ni-cas são em-pre-ga-das para im-ple-men-tar QoS em re-des mo-der-nas [[], []]. 
  []
 
-[5] [6]) (./main-texto.bbl
+[5] [6] [7] [8] [9]) (./main-texto.bbl
 Underfull \hbox (badness 10000) in paragraph at lines 10--14
 []\T1/cmr/m/n/12 GeeksforGeeks.  Com-pu-ter network qua-lity of ser-vice and mul-
  []
@@ -476,36 +476,61 @@ Underfull \hbox (badness 10000) in paragraph at lines 10--14
  []
 
 
-Underfull \hbox (badness 7468) in paragraph at lines 10--14
+Underfull \hbox (badness 4013) in paragraph at lines 10--14
 \T1/cmtt/m/n/12 computer-[]network-[]quality-[]of-[]service-[]and-[]multimedia/$[]\T1/cmr/m/n/12 , 2024.  Acesso
  []
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 16--20
+[]\T1/cmr/m/n/12 GeeksforGeeks.  Forward er-ror cor-rec-tion in com-pu-ter
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 16--20
+\T1/cmr/m/n/12 networks.  []$\T1/cmtt/m/n/12 https : / / www . geeksforgeeks . org / computer-[]networks /
+ []
+
+
+Underfull \hbox (badness 4927) in paragraph at lines 16--20
+\T1/cmtt/m/n/12 forward-[]error-[]correction-[]in-[]computer-[]networks/$[]\T1/cmr/m/n/12 , 2024.  Acesso em:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 28--32
+[]\T1/cmr/m/n/12 TechTarget.  Qua-lity of ex-pe-ri-ence (QoE or QoX).  []$\T1/cmtt/m/n/12 https :
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 28--32
+\T1/cmtt/m/n/12 / / www . techtarget . com / searchcustomerexperience / definition /
+ []
+
+
+Underfull \hbox (badness 2762) in paragraph at lines 34--38
 \T1/cmtt/m/n/12 searchunifiedcommunications / definition / QoS-[]Quality-[]of-[]Service$[]\T1/cmr/m/n/12 , 2024.
  []
 
-) [7] (./main-texto.aux)
+) [10] (./main-texto.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
  ***********
 Package rerunfilecheck Info: File `main-texto.out' has not changed.
-(rerunfilecheck)             Checksum: AEC2B907FF0B34BB7FE97077C715A211;3379.
+(rerunfilecheck)             Checksum: 05BAF6212461865CB381058432D38FF5;4939.
  ) 
 Here is how much of TeX's memory you used:
- 13819 strings out of 468336
- 214910 string characters out of 5442630
- 746153 words of memory out of 5000000
- 42409 multiletter control sequences out of 15000+600000
+ 13854 strings out of 468336
+ 215502 string characters out of 5442630
+ 749231 words of memory out of 5000000
+ 42428 multiletter control sequences out of 15000+600000
  641864 words of font info for 73 fonts, out of 8000000 for 9000
  624 hyphenation exceptions out of 8191
- 80i,5n,82p,605b,598s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texmf-dist/fonts/type1/public/cm-super/sfbi1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbi1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm2488.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1728.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt1200.pfb>
-Output written on main-texto.pdf (8 pages, 277812 bytes).
+ 80i,5n,82p,605b,596s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbi1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbi1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1728.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm2488.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1728.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt1200.pfb>
+Output written on main-texto.pdf (11 pages, 329005 bytes).
 PDF statistics:
- 268 PDF objects out of 1000 (max. 8388607)
- 230 compressed objects within 3 object streams
- 45 named destinations out of 1000 (max. 500000)
- 161 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 370 PDF objects out of 1000 (max. 8388607)
+ 322 compressed objects within 4 object streams
+ 61 named destinations out of 1000 (max. 500000)
+ 241 words of extra memory for PDF output out of 10000 (max. 10000000)
 

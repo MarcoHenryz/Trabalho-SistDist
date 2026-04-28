@@ -1,14 +1,15 @@
 # Fdb version 4
-["bibtex slides"] 1777402676.65009 "slides.aux" "slides.bbl" "slides" 1777402679.97063 0
-  "./bibliografia.bib" 1777401561.85085 903 ca43b14f9771deed5d9067671d3c255c ""
+["bibtex slides"] 1777407828.70391 "slides.aux" "slides.bbl" "slides" 1777407834.36565 0
+  "./bibliografia.bib" 1777406646.49614 1798 92f3a7ba227c84a04f4cbd122f7a50c3 ""
   "/usr/share/texmf-dist/bibtex/bst/base/alpha.bst" 1775415801 23907 a5f93555796fb564b924339521f10a7c ""
-  "slides.aux" 1777402679.84143 5082 4dd272bba60a846003f4e0d065322354 "pdflatex"
+  "slides.aux" 1777407834.21319 7208 06113969cd2294d949a3aa44ec522371 "pdflatex"
   (generated)
   "slides.bbl"
   "slides.blg"
   (rewritten before read)
-["pdflatex"] 1777402676.68774 "slides.tex" "slides.pdf" "slides" 1777402679.97074 0
+["pdflatex"] 1777407828.74667 "slides.tex" "slides.pdf" "slides" 1777407834.36584 0
   "/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1775415801 2971 def0b6c1f0b107b3b936def894055589 ""
+  "/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1775415801 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1775415801 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texmf-dist/fonts/tfm/jknappen/ec/ecsi1000.tfm" 1775415801 3584 87c00098505ed1ab5849d7a05016cb73 ""
   "/usr/share/texmf-dist/fonts/tfm/jknappen/ec/ecsi1095.tfm" 1775415801 3584 1a0353d13d3e702865b76e3b1c321b5b ""
@@ -23,6 +24,7 @@
   "/usr/share/texmf-dist/fonts/tfm/jknappen/ec/ecss1200.tfm" 1775415801 3584 db562fb1d1c474cc55f0ce8a1dd94fe7 ""
   "/usr/share/texmf-dist/fonts/tfm/jknappen/ec/ecss1440.tfm" 1775415801 3584 861af00b50f6fb3ae4544a29a04a7577 ""
   "/usr/share/texmf-dist/fonts/tfm/jknappen/ec/ecsx1095.tfm" 1775415801 3584 380f45aff25ba25cf53bd1991ce4247b ""
+  "/usr/share/texmf-dist/fonts/tfm/jknappen/ec/tcss1095.tfm" 1775415801 1536 f0fa079cdc83a6ffeda21e42352cf1ea ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1775415801 1004 54797486969f23fa377b128694d548df ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1775415801 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "/usr/share/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm" 1775415801 916 f87d7c45f9c908e672703b83b72241a3 ""
@@ -43,6 +45,9 @@
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm" 1775415801 1120 8b7d695260f3cff42e636090a8002094 ""
   "/usr/share/texmf-dist/fonts/tfm/public/sansmathaccent/mathkerncmssi10.tfm" 1775415801 1696 aaa5bbd1f47f001247d42218ce371101 ""
   "/usr/share/texmf-dist/fonts/tfm/public/sansmathaccent/mathkerncmssi8.tfm" 1775415801 1676 fb6c6a335484692abff897d6e8965829 ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb" 1775415801 24457 5cbb7bdf209d5d1ce9892a9b80a307cc ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi10.pfb" 1775415801 25150 e0d09798d232ab9d00c5c0a8df6cc22d ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmssi8.pfb" 1775415801 25168 33771b85f45c82138dd7745db7092d1c ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb" 1775415801 31764 459c573c03a4949a528c2cc7f557e217 ""
   "/usr/share/texmf-dist/fonts/type1/public/cm-super/sfsi1000.pfb" 1775415801 103607 8dec125a771685406ae21998f7cfb6f2 ""
   "/usr/share/texmf-dist/fonts/type1/public/cm-super/sfsi1095.pfb" 1775415801 106965 72348192f7f7f7c44b4558f2996b4879 ""
@@ -223,12 +228,12 @@
   "/usr/share/texmf-dist/web2c/texmf.cnf" 1775415801 43569 fd570f2fa160877d211e859f687312ba ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1776779526 5421951 f5cff4300feb7af4ec74ea9357f3dc1a ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1776779508 3115830 2378ea25f72248af39f116a17159f65c ""
-  "slides.aux" 1777402679.84143 5082 4dd272bba60a846003f4e0d065322354 "pdflatex"
-  "slides.bbl" 1777402676.68435 49 0eba253fc001332e731e8aba3f23127b "bibtex slides"
-  "slides.nav" 1777402679.84321 3147 b3928b36ca06bd70217f54b428c4e6ff "pdflatex"
-  "slides.out" 1777402679.84321 935 504d96b3f6f7e86683466cadae90d33a "pdflatex"
-  "slides.tex" 1777402298.95827 7983 44aa11e6365c5a14db1b1cb99ad049ae ""
-  "slides.toc" 1777402679.84321 364 37075ce28101682397d7a1d9fb9e8d4f "pdflatex"
+  "slides.aux" 1777407834.21319 7208 06113969cd2294d949a3aa44ec522371 "pdflatex"
+  "slides.bbl" 1777407828.74307 49 0eba253fc001332e731e8aba3f23127b "bibtex slides"
+  "slides.nav" 1777407834.21419 4544 f20ee10ee4df3d4ca7107007287e7304 "pdflatex"
+  "slides.out" 1777407834.21419 1493 39c793ea9ff81b850666d9be32db1c3b "pdflatex"
+  "slides.tex" 1777407616.2801 12625 eff5d235dc5f58bae1d8edb00406cbda ""
+  "slides.toc" 1777407834.21419 553 b40c38f6c35a5ec6845ec160b27355d5 "pdflatex"
   (generated)
   "slides.aux"
   "slides.log"

@@ -3,5 +3,8 @@
 \beamer@sectionintoc {2}{Definição de QoS}{8}{0}{2}
 \beamer@sectionintoc {3}{Elementos Avaliados}{14}{0}{3}
 \beamer@sectionintoc {4}{Técnicas de QoS}{22}{0}{4}
-\beamer@sectionintoc {5}{QoS e Multimídia}{27}{0}{5}
-\beamer@sectionintoc {6}{Vantagens e Melhores Práticas}{34}{0}{6}
+\beamer@sectionintoc {5}{QoS em Redes IPv6}{28}{0}{5}
+\beamer@sectionintoc {6}{QoS e Multimídia}{35}{0}{6}
+\beamer@sectionintoc {7}{Qualidade de Experiência (QoE)}{42}{0}{7}
+\beamer@sectionintoc {8}{Forward Error Correction (FEC)}{47}{0}{8}
+\beamer@sectionintoc {9}{Vantagens e Melhores Práticas}{53}{0}{9}

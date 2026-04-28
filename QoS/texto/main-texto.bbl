@@ -1,4 +1,4 @@
-\begin{thebibliography}{{Gee}24}
+\begin{thebibliography}{{Gee}24b}
 
 \bibitem[{For}24]{fortinet2024}
 {Fortinet}.
@@ -6,13 +6,31 @@
 \newblock \url{https://www.fortinet.com/resources/cyberglossary/qos-quality-of-service}, 2024.
 \newblock Acesso em: 28 abr. 2026.
 
-\bibitem[{Gee}24]{geeksforgeeks2024}
+\bibitem[{Gee}24a]{geeksforgeeks2024}
 {GeeksforGeeks}.
 \newblock Computer network quality of service and multimedia.
 \newblock \url{https://www.geeksforgeeks.org/computer-networks/computer-network-quality-of-service-and-multimedia/}, 2024.
 \newblock Acesso em: 28 abr. 2026.
 
-\bibitem[{Tec}24]{techtarget2024}
+\bibitem[{Gee}24b]{geeksforgeeksfec2024}
+{GeeksforGeeks}.
+\newblock Forward error correction in computer networks.
+\newblock \url{https://www.geeksforgeeks.org/computer-networks/forward-error-correction-in-computer-networks/}, 2024.
+\newblock Acesso em: 28 abr. 2026.
+
+\bibitem[{IEE}26]{ieee_ipv6qos}
+{IEEE}.
+\newblock Implementing an {IPv6} {QoS} management scheme using flow label \& class of service fields.
+\newblock Artigo {IEEE}, 2026.
+\newblock Acesso em: 28 abr. 2026.
+
+\bibitem[{Tec}24a]{techtargetqoe2024}
+{TechTarget}.
+\newblock Quality of experience ({QoE} or {QoX}).
+\newblock \url{https://www.techtarget.com/searchcustomerexperience/definition/Quality-of-Experience-QoE-or-QoX}, 2024.
+\newblock Acesso em: 28 abr. 2026.
+
+\bibitem[{Tec}24b]{techtarget2024}
 {TechTarget}.
 \newblock What is {QoS} ({Quality of Service})?
 \newblock \url{https://www.techtarget.com/searchunifiedcommunications/definition/QoS-Quality-of-Service}, 2024.

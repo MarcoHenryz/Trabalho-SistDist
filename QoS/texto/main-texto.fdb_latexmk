@@ -1,13 +1,13 @@
 # Fdb version 4
-["bibtex main-texto"] 1777402485.96888 "main-texto.aux" "main-texto.bbl" "main-texto" 1777402486.42733 0
-  "./refs.bib" 1777400393.41265 903 ca43b14f9771deed5d9067671d3c255c ""
+["bibtex main-texto"] 1777407796.55149 "main-texto.aux" "main-texto.bbl" "main-texto" 1777407797.04237 0
+  "./refs.bib" 1777406471.69699 1798 92f3a7ba227c84a04f4cbd122f7a50c3 ""
   "/usr/share/texmf-dist/bibtex/bst/base/alpha.bst" 1775415801 23907 a5f93555796fb564b924339521f10a7c ""
-  "main-texto.aux" 1777402486.30463 3750 1d18040b34c68ed95d8539f0850f781b "pdflatex"
+  "main-texto.aux" 1777407796.91525 5501 d179d12b8a2caabb9f3128a511495726 "pdflatex"
   (generated)
   "main-texto.bbl"
   "main-texto.blg"
   (rewritten before read)
-["pdflatex"] 1777402486.00658 "main-texto.tex" "main-texto.pdf" "main-texto" 1777402486.4274 0
+["pdflatex"] 1777407796.59229 "main-texto.tex" "main-texto.pdf" "main-texto" 1777407797.04247 0
   "/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc" 1775415801 2971 def0b6c1f0b107b3b936def894055589 ""
   "/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc" 1775415801 2900 1537cc8184ad1792082cd229ecc269f4 ""
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1775415801 3524 cb3e574dea2d1052e39280babc910dc8 ""
@@ -42,6 +42,9 @@
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm" 1775415801 1124 6c73e740cf17375f03eec0ee63599741 ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm" 1775415801 1116 933a60c408fc0a863a92debe84b2d294 ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm" 1775415801 1120 8b7d695260f3cff42e636090a8002094 ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb" 1775415801 36741 fa121aac0049305630cf160b86157ee4 ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb" 1775415801 35469 70d41d2b9ea31d5d813066df7c99281c ""
+  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb" 1775415801 32722 d7379af29a190c3f453aba36302ff5a9 ""
   "/usr/share/texmf-dist/fonts/type1/public/cm-super/sfbi1200.pfb" 1775415801 205875 5958bf9326f04501f7006947acfbcae1 ""
   "/usr/share/texmf-dist/fonts/type1/public/cm-super/sfbi1440.pfb" 1775415801 207857 6366cee782d1f80c6ebf5fc3d282e39d ""
   "/usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb" 1775415801 140176 d4962f948b4cc0adf4d3dde77a128c95 ""
@@ -131,14 +134,14 @@
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1776779526 5421951 f5cff4300feb7af4ec74ea9357f3dc1a ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1776779508 3115830 2378ea25f72248af39f116a17159f65c ""
   "introducao.tex" 1777400523.22471 1534 d525e93a199de7835c96ba6066ac7ea8 ""
-  "main-texto.aux" 1777402486.30463 3750 1d18040b34c68ed95d8539f0850f781b "pdflatex"
-  "main-texto.bbl" 1777402486.00449 796 766fe0fe70963515f66d9ce222619dde "bibtex main-texto"
-  "main-texto.out" 1777402486.30509 3379 aec2b907ff0b34bb7fe97077c715a211 "pdflatex"
+  "main-texto.aux" 1777407796.91525 5501 d179d12b8a2caabb9f3128a511495726 "pdflatex"
+  "main-texto.bbl" 1777407796.58932 1534 722b08169512c5c7ff07647bfbc8c771 "bibtex main-texto"
+  "main-texto.out" 1777407796.91609 4939 05baf6212461865cb381058432d38ff5 "pdflatex"
   "main-texto.tex" 1777399369.40693 242 323a04dd250b853cb6c78b8ec2b1912c ""
-  "main-texto.toc" 1777402486.30509 1780 1389540ea79dfc7877f2c44c0bea6eca "pdflatex"
+  "main-texto.toc" 1777407796.91609 2617 9b6abed2c97072fdfcc36107959f0284 "pdflatex"
   "preambulo.tex" 1777399369.40693 1000 6e043ac2f8db65fe96b7517e688a037d ""
   "title.tex" 1777402300.10129 299 bdc1e1c86587b7c57503c945186fd95d ""
-  "trabalho.tex" 1777401463.74858 11236 2e1d060856a3c1df1a6b1f9b91c1ee3d ""
+  "trabalho.tex" 1777407529.65105 18958 fc3da416415c4386b2e883ab28552af5 ""
   (generated)
   "main-texto.aux"
   "main-texto.log"

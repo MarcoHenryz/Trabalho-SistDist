@@ -15,7 +15,17 @@
 \contentsline {subsection}{\numberline {4.2}Filas (\textit {Queuing})}{5}{subsection.4.2}%
 \contentsline {subsection}{\numberline {4.3}RSVP (\textit {Resource Reservation Protocol})}{5}{subsection.4.3}%
 \contentsline {subsection}{\numberline {4.4}\textit {Traffic Shaping}}{6}{subsection.4.4}%
-\contentsline {section}{\numberline {5}QoS e Multimídia}{6}{section.5}%
-\contentsline {section}{\numberline {6}Vantagens e Melhores Práticas}{6}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Vantagens do QoS}{6}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Melhores Práticas}{7}{subsection.6.2}%
+\contentsline {subsection}{\numberline {4.5}Abordagens de QoS}{6}{subsection.4.5}%
+\contentsline {section}{\numberline {5}QoS em Redes IPv6}{6}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Flow Label}{7}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Controle de Admissão em IPv6}{7}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Bandwidth Broker}{7}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}QoSbox}{7}{subsubsection.5.2.2}%
+\contentsline {section}{\numberline {6}QoS e Multimídia}{7}{section.6}%
+\contentsline {section}{\numberline {7}Qualidade de Experiência (QoE)}{8}{section.7}%
+\contentsline {section}{\numberline {8}Forward Error Correction (FEC)}{8}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Exemplo de Uso}{8}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Relação com QoS}{9}{subsection.8.2}%
+\contentsline {section}{\numberline {9}Vantagens e Melhores Práticas}{9}{section.9}%
+\contentsline {subsection}{\numberline {9.1}Vantagens do QoS}{9}{subsection.9.1}%
+\contentsline {subsection}{\numberline {9.2}Melhores Práticas}{9}{subsection.9.2}%
