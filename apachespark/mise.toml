@@ -1,0 +1,6 @@
+[tools]
+java = "17"
+python = "3.11"
+
+[env]
+JAVA_TOOL_OPTIONS = "-XX:-UseContainerSupport"
