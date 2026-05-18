@@ -5,8 +5,6 @@ temperatura global (Berkeley Earth) e emissões de CO2 (Our World in Data) com
 **PySpark 4.1.1** em modo local (`local[*]`) para identificar tendências de
 aquecimento, anomalias térmicas e correlação CO2 × temperatura.
 
-Especificação completa do trabalho: `refs/Trabalho_SD_2026_Spark.pdf`.
-
 ## Pré-requisitos
 
 - **Java 17** (JDK)
@@ -18,7 +16,7 @@ Especificação completa do trabalho: `refs/Trabalho_SD_2026_Spark.pdf`.
 
 Todos os comandos abaixo são executados **dentro da pasta `apachespark/`**.
 
-### Opção A — mise (recomendado)
+### Opção A — Usando mise como gerenciador de versões
 
 [mise](https://mise.jdx.dev) gerencia as versões de Java e Python e exporta a
 variável de ambiente necessária automaticamente (já configurado em `mise.toml`).
@@ -54,7 +52,7 @@ mise install
 Isso instala as versões fixadas em `mise.toml` e passa a exportar
 `JAVA_TOOL_OPTIONS="-XX:-UseContainerSupport"` ao entrar na pasta.
 
-### Opção B — Instalação manual (fallback, sem mise)
+### Opção B — Instalação manual, alternativa ao mise.
 
 Instale Java 17 e Python 3.11 pelo gerenciador da sua plataforma:
 
@@ -73,13 +71,14 @@ Instale Java 17 e Python 3.11 pelo gerenciador da sua plataforma:
   winget install Microsoft.OpenJDK.17
   ```
 
-> **Arch Linux — passo obrigatório:** com Java 17 + cgroup v2, o Spark lê a
+> **Arch Linux - passo necessário:** com Java 17 + cgroup v2, o Spark lê a
 > memória do sistema errado e falha. Exporte a variável (o mise faz isso
-> automaticamente; manualmente é necessário):
+> automaticamente; manualmente é necessário o comando abaixo):
 > ```bash
 > export JAVA_TOOL_OPTIONS="-XX:-UseContainerSupport"
 > ```
-> Adicione a linha ao seu `~/.zshrc` / `~/.bashrc` para torná-la permanente.
+> É possível adicionar a linha ao seu `~/.zshrc` / `~/.bashrc` para torná-la permanente.
+
 
 ### Criar o virtualenv e instalar dependências
 
@@ -102,7 +101,7 @@ pip install -r requirements.txt
 
 ## Obter os datasets
 
-Os CSVs **não** estão no repositório (`.gitignore`). Baixe e coloque ambos em
+Os CSVs **não** estão no repositório (`.gitignore`), necessário baixar e colocar em: 
 `apachespark/data/`:
 
 - **Temperaturas (Berkeley Earth):** Kaggle —
