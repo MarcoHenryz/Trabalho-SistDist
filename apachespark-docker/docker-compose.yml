@@ -94,6 +94,22 @@ services:
     networks:
       - spark-network
 
+  jupyter:
+    image: jupyter/pyspark-notebook:latest
+    container_name: jupyter
+    ports:
+      - "8888:8888"
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+      - JUPYTER_ENABLE_LAB=yes
+    volumes:
+      - ./spark-apps:/home/jovyan/work/spark-apps
+      - ./spark-data:/home/jovyan/work/spark-data
+    networks:
+      - spark-network
+    depends_on:
+      - spark-master
+
 networks:
   spark-network:
     driver: bridge
