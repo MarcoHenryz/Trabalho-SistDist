@@ -155,3 +155,33 @@ result_schema = "color string, fruit string, v1 double, v2 long"  # necessário 
 
 
 df_novo.groupby("color").applyInPandas(plus_mean, schema=result_schema).show()
+
+# agrupando dois DataFrames, usando cogruup, e aplicando uma função sobre os dados
+
+df4 = spark.createDataFrame(
+    [(20000101, 1, 1.0), (20000101, 2, 2.0), (20000102, 1, 3.0), (20000102, 2, 4.0)],
+    ("time", "id", "v1"),
+)
+
+df5 = spark.createDataFrame(
+    [(20000101, 1, "x"), (20000101, 2, "y")], ("time", "id", "v2")
+)
+
+
+def merge_ordered(l, r):
+    return pd.merge_ordered(l, r)
+
+
+df4.groupby("id").cogroup(df5.groupby("id")).applyInPandas(
+    merge_ordered, schema="time int, id int, v1 double, v2 string"
+).show()
+
+# Leitura de dados, o principal é o csv
+
+df_novo.write.csv("teste.csv", "overwrite", header=True)
+
+print(df_novo.rdd.getNumPartitions())
+print(spark.sparkContext.master)
+
+df_lido = spark.read.csv("teste.csv", header=True)
+df_lido.show()
