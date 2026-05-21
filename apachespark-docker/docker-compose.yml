@@ -14,6 +14,7 @@ services:
     volumes:
       - ./spark-apps:/opt/spark-apps
       - ./spark-data:/opt/spark-data
+      - ./spark-events:/opt/spark/spark-events
     networks:
       - spark-network
 
@@ -33,6 +34,7 @@ services:
     volumes:
       - ./spark-apps:/opt/spark-apps
       - ./spark-data:/opt/spark-data
+      - ./spark-events:/opt/spark/spark-events
     networks:
       - spark-network
 
@@ -52,6 +54,7 @@ services:
     volumes:
       - ./spark-apps:/opt/spark-apps
       - ./spark-data:/opt/spark-data
+      - ./spark-events:/opt/spark/spark-events
     networks:
       - spark-network
 
@@ -71,6 +74,23 @@ services:
     volumes:
       - ./spark-apps:/opt/spark-apps
       - ./spark-data:/opt/spark-data
+      - ./spark-events:/opt/spark/spark-events
+    networks:
+      - spark-network
+
+  spark-history:
+    image: apache/spark:3.5.0
+    container_name: spark-history
+    hostname: spark-history
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.history.HistoryServer
+    environment:
+      - SPARK_HISTORY_OPTS=-Dspark.history.fs.logDirectory=/opt/spark/spark-events
+    ports:
+      - "18080:18080"
+    volumes:
+      - ./spark-events:/opt/spark/spark-events
+    depends_on:
+      - spark-master
     networks:
       - spark-network
 
