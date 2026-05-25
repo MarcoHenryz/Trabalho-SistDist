@@ -103,6 +103,7 @@ services:
       - SPARK_MASTER=spark://spark-master:7077
       - JUPYTER_ENABLE_LAB=yes
     volumes:
+      - ./notebooks:/home/jovyan/work
       - ./spark-apps:/home/jovyan/work/spark-apps
       - ./spark-data:/home/jovyan/work/spark-data
     networks:
