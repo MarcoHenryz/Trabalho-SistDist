@@ -1,6 +1,6 @@
 services:
   spark-master:
-    image: apache/spark:3.5.0
+    build: .
     container_name: spark-master
     hostname: spark-master
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
@@ -19,7 +19,7 @@ services:
       - spark-network
 
   spark-worker-1:
-    image: apache/spark:3.5.0
+    build: .
     container_name: spark-worker-1
     hostname: spark-worker-1
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
@@ -39,7 +39,7 @@ services:
       - spark-network
 
   spark-worker-2:
-    image: apache/spark:3.5.0
+    build: .
     container_name: spark-worker-2
     hostname: spark-worker-2
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
@@ -59,7 +59,7 @@ services:
       - spark-network
 
   spark-worker-3:
-    image: apache/spark:3.5.0
+    build: .
     container_name: spark-worker-3
     hostname: spark-worker-3
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
@@ -95,7 +95,9 @@ services:
       - spark-network
 
   jupyter:
-    image: jupyter/pyspark-notebook:latest
+    build:
+      context: .
+      dockerfile: Dockerfile.jupyter
     container_name: jupyter
     ports:
       - "8888:8888"
@@ -103,9 +105,9 @@ services:
       - SPARK_MASTER=spark://spark-master:7077
       - JUPYTER_ENABLE_LAB=yes
     volumes:
-      - ./notebooks:/home/jovyan/work
-      - ./spark-apps:/home/jovyan/work/spark-apps
-      - ./spark-data:/home/jovyan/work/spark-data
+      - ./notebooks:/opt/spark/work-dir
+      - ./spark-data:/opt/spark-data
+      - ./spark-events:/opt/spark/spark-events
     networks:
       - spark-network
     depends_on:
