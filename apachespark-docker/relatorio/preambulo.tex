@@ -14,7 +14,41 @@
 \usepackage{hyperref}
 \usepackage{setspace}
 \usepackage[parfill]{parskip} % para espaçamento no texto entre paragrafos
+\usepackage{listings} % para trechos de codigo PySpark/Python
+\usepackage{float} % para posicionamento [H] de figuras
 \usepackage{natbib} % para citacoes tambem exige que os arquivos bib sejam excluidos
 %\usepackage[style=authoryear]{biblatex} % tomar cuidado que biblatex não tem suporte para o latin e pode exigir recompilacao do bib
 \usepackage{csquotes}
 %\addbibresource{learnlatex.bib} %file of reference
+
+% Configuracao de estilo para listagens de codigo PySpark
+\definecolor{codeverde}{rgb}{0.0,0.5,0.0}
+\definecolor{codecinza}{rgb}{0.5,0.5,0.5}
+\definecolor{codelaranja}{rgb}{0.7,0.35,0.0}
+\definecolor{codefundo}{rgb}{0.97,0.97,0.97}
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{codeverde}\itshape,
+  stringstyle=\color{codelaranja},
+  numbers=left,
+  numberstyle=\tiny\color{codecinza},
+  numbersep=8pt,
+  stepnumber=1,
+  frame=single,
+  rulecolor=\color{codecinza},
+  backgroundcolor=\color{codefundo},
+  breaklines=true,
+  breakatwhitespace=true,
+  showstringspaces=false,
+  tabsize=4,
+  captionpos=b,
+  extendedchars=true,
+  literate=%
+    {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
+    {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
+    {â}{{\^a}}1 {ê}{{\^e}}1 {ô}{{\^o}}1 {Â}{{\^A}}1 {Ê}{{\^E}}1 {Ô}{{\^O}}1
+    {ã}{{\~a}}1 {õ}{{\~o}}1 {Ã}{{\~A}}1 {Õ}{{\~O}}1
+    {à}{{\`a}}1 {ç}{{\c c}}1 {Ç}{{\c C}}1
+}
