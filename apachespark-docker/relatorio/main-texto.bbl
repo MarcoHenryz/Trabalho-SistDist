@@ -1,3 +1,64 @@
-\begin{thebibliography}{}
+\begin{thebibliography}{{Mat}24b}
+
+\bibitem[{Apa}24]{sparkdocs}
+{Apache Software Foundation}.
+\newblock Apache spark --- documentação oficial.
+\newblock \url{https://spark.apache.org}, 2024.
+\newblock Acesso em: maio 2026.
+
+\bibitem[{Ber}17]{databerkeley}
+{Berkeley Earth}.
+\newblock Climate change: Earth surface temperature data.
+\newblock
+  \url{https://www.kaggle.com/datasets/berkeleyearth/climate-change-earth-surface-temperature-data},
+  2017.
+\newblock Acesso em: maio 2026.
+
+\bibitem[{Cly}23]{dockerclynt}
+{Clynt}.
+\newblock Apache spark with docker.
+\newblock
+  \url{https://clynt.com/blog/data-engineering/apache-spark/apache-spark-with-docker},
+  2023.
+\newblock Acesso em: maio 2026.
+
+\bibitem[Kul20]{dockerpavan}
+Pavan~P. Kulkarni.
+\newblock Spark on docker --- cluster com history server.
+\newblock \url{https://www.pavanpkulkarni.com/blog/13-spark-on-docker/}, 2020.
+\newblock Acesso em: maio 2026.
+
+\bibitem[{Mat}24a]{videoaula2}
+{Material da disciplina}.
+\newblock Apache spark --- vídeo complementar (indicado pelo professor).
+\newblock \url{https://www.youtube.com/watch?v=IUSuyx2fMCU}, 2024.
+\newblock Acesso em: maio 2026.
+
+\bibitem[{Mat}24b]{videoaula1}
+{Material da disciplina}.
+\newblock Apache spark --- vídeo introdutório (indicado pelo professor).
+\newblock \url{https://www.youtube.com/watch?v=Iema3-fSo7g}, 2024.
+\newblock Acesso em: maio 2026.
+
+\bibitem[{Our}24]{dataowid}
+{Our World in Data}.
+\newblock {CO2} and greenhouse gas emissions.
+\newblock \url{https://github.com/owid/co2-data}, 2024.
+\newblock Acesso em: maio 2026.
+
+\bibitem[Sap22]{dockermedium}
+Eric Saph{\'e}.
+\newblock Testing apache spark locally: Docker compose and kubernetes
+  deployment.
+\newblock
+  \url{https://medium.com/@SaphE/testing-apache-spark-locally-docker-compose-and-kubernetes-deployment-94d35a54f222},
+  2022.
+\newblock Acesso em: maio 2026.
+
+\bibitem[Wit21]{dockerwittline}
+Wittline.
+\newblock Apache spark docker --- cluster com jupyter e hdfs.
+\newblock \url{https://wittline.github.io/apache-spark-docker/}, 2021.
+\newblock Acesso em: maio 2026.
 
 \end{thebibliography}

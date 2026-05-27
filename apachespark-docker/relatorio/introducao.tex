@@ -1,5 +1,34 @@
 \section{Introdução}
 \label{sec:introducao}
 
-\lipsum[1-2]
+As mudanças climáticas figuram entre os temas mais relevantes da ciência contemporânea, e
+o estudo de suas tendências depende da análise de séries históricas extensas de
+temperatura. Conjuntos de dados como o \emph{Climate Change: Earth Surface Temperature
+Data}, da Berkeley Earth~\citep{databerkeley}, reúnem medições de mais de dois séculos por
+cidade e país, alcançando milhões de registros --- um volume que torna inviável o
+processamento em uma única máquina por ferramentas tradicionais. Esse cenário motiva o uso
+de plataformas de \emph{Big Data} capazes de distribuir o cálculo por um aglomerado de
+nós.
 
+Este trabalho utiliza o \textbf{Apache Spark}~\citep{sparkdocs}, motor de processamento
+distribuído em memória, para investigar tendências de aquecimento e anomalias térmicas ao
+longo dos últimos 250 anos. O Spark foi implantado em um \emph{cluster} no modelo
+\emph{master/worker}, totalmente conteinerizado com Docker e \texttt{docker-compose}, o que
+garante um ambiente reprodutível e isolado. À base de temperaturas somou-se a base de
+emissões de CO\textsubscript{2} da \emph{Our World in Data}~\citep{dataowid}, permitindo
+correlacionar aquecimento e emissões por meio de um \emph{join} entre as duas fontes.
+
+O objetivo é demonstrar, na prática, a capacidade do Spark de lidar com transformações em
+larga escala e cálculos estatísticos complexos, respondendo a oito perguntas analíticas
+que envolvem agregações por década, rankings de instabilidade climática, correlações,
+\emph{Window Functions} e previsão com regressão linear via \texttt{Spark MLlib}. Ao longo
+do \emph{pipeline}, explora-se também o processo de \textbf{ETL} (limpeza, padronização e
+enriquecimento dos dados) e técnicas de otimização como o uso de \texttt{cache} para
+reaproveitamento de resultados intermediários.
+
+O restante do relatório está organizado da seguinte forma: a Seção~\ref{sec:arquitetura}
+descreve a arquitetura do \emph{cluster}; a Seção~\ref{sec:etl} detalha a metodologia de
+ETL; a Seção~\ref{sec:cache} discute a análise de otimização com \texttt{cache}; a
+Seção~\ref{sec:respostas} apresenta as respostas às oito perguntas com suas visualizações e
+interpretações; e a Seção~\ref{sec:sparkui} reúne as evidências de execução coletadas na
+Spark UI.

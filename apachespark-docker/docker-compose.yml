@@ -58,25 +58,25 @@ services:
     networks:
       - spark-network
 
-  spark-worker-3:
-    build: .
-    container_name: spark-worker-3
-    hostname: spark-worker-3
-    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
-    environment:
-      - SPARK_WORKER_CORES=2
-      - SPARK_WORKER_MEMORY=4g
-      - SPARK_WORKER_WEBUI_PORT=8083
-    ports:
-      - "8083:8083"
-    depends_on:
-      - spark-master
-    volumes:
-      - ./spark-apps:/opt/spark-apps
-      - ./spark-data:/opt/spark-data
-      - ./spark-events:/opt/spark/spark-events
-    networks:
-      - spark-network
+  # spark-worker-3:
+  #   build: .
+  #   container_name: spark-worker-3
+  #   hostname: spark-worker-3
+  #   command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+  #   environment:
+  #     - SPARK_WORKER_CORES=2
+  #     - SPARK_WORKER_MEMORY=4g
+  #     - SPARK_WORKER_WEBUI_PORT=8083
+  #   ports:
+  #     - "8083:8083"
+  #   depends_on:
+  #     - spark-master
+  #   volumes:
+  #     - ./spark-apps:/opt/spark-apps
+  #     - ./spark-data:/opt/spark-data
+  #     - ./spark-events:/opt/spark/spark-events
+  #   networks:
+  #     - spark-network
 
   spark-history:
     image: apache/spark:3.5.0
@@ -101,7 +101,7 @@ services:
     container_name: jupyter
     ports:
       - "8888:8888"
-      - "4040:4040" 
+      - "4040:4040"
     environment:
       - SPARK_MASTER=spark://spark-master:7077
       - JUPYTER_ENABLE_LAB=yes

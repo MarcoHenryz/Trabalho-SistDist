@@ -736,37 +736,37 @@ resultados (\textit{stage reuse}) e do \textit{cache}. Pontos a comentar nas cap
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{spark_ui_workers.png}
+  \includegraphics[width=0.9\textwidth]{images/tresworkers.png}
   \caption{Spark Master UI (\texttt{localhost:8080}) com os 3 workers ativos.}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{spark_ui_jobs.png}
-  \caption{Aba Jobs da Spark UI durante a execução do pipeline.}
+  \includegraphics[width=0.9\textwidth]{images/completedjobs.png}
+  \caption{Aba Jobs da Spark UI depois da execução do pipeline.}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{spark_ui_dag.png}
-  \caption{DAG do stage mais pesado na Spark UI.}
+  \includegraphics[width=0.9\textwidth]{images/dag.png}
+  \caption{DAG e Event Timeline do stage mais pesado na Spark UI.}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{spark_ui_stages.png}
+  \includegraphics[width=0.9\textwidth]{images/algunsstages.png}
   \caption{Aba Stages: distribuição de tarefas entre os executors.}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{spark_ui_storage.png}
-  \caption{Aba Storage: \texttt{df\_limpo} persistido em memória pelo \texttt{cache()}.}
+  \includegraphics[width=0.9\textwidth]{images/storage.png}
+  \caption{Aba Storage: distribuição de memória.}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.9\textwidth]{spark_ui_executors.png}
+  \includegraphics[width=0.9\textwidth]{images/executors.png}
   \caption{Aba Executors: 3 workers com tasks distribuídas.}
 \end{figure}
 
@@ -776,3 +776,40 @@ resultados (\textit{stage reuse}) e do \textit{cache}. Pontos a comentar nas cap
 %   \includegraphics[width=0.9\textwidth]{caminho/para/print_dag_p5.png}
 %   \caption{DAG da Window Function (P5) na Spark UI.}
 % \end{figure}
+
+\section{Dicionário de Dados Final}
+\label{sec:dicionario}
+
+O \textbf{dataset final enriquecido} produzido pelo \textit{pipeline} é o \texttt{df\_join}
+(construído na P6): o resultado do \textit{inner join} entre a temperatura agregada por
+país/ano e a base de emissões de CO\textsubscript{2} já limpa, pelas chaves país e ano.
+Esse conjunto é persistido em \texttt{spark-data/output/dataset\_final.csv}. Cada linha
+representa \textbf{um país em um ano}, combinando temperatura e emissões padronizadas. A
+Tabela~\ref{tab:dicionario} descreve cada coluna.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{lll}
+    \toprule
+    \textbf{Coluna} & \textbf{Tipo} & \textbf{Descrição} \\
+    \midrule
+    \texttt{Country} & string & País (base de temperatura) --- chave do \textit{join}. \\
+    \texttt{Year} & int & Ano da medição --- chave do \textit{join} (\texttt{Year >= 1974}). \\
+    \texttt{AvgTemp} & double & Temperatura média anual do país (°C), \\
+                     &        & agregada de \texttt{AverageTemperature} após limpeza. \\
+    \texttt{Country\_CO2} & string & País na base de CO\textsubscript{2} (OWID), \\
+                          &        & sem agregados regionais --- chave correspondente. \\
+    \texttt{Year\_CO2} & int & Ano correspondente na base de CO\textsubscript{2}. \\
+    \texttt{co2} & double & Emissões anuais de CO\textsubscript{2} (milhões de toneladas, Mt). \\
+    \texttt{co2\_per\_capita} & double & Emissões de CO\textsubscript{2} por habitante (t per capita). \\
+    \texttt{total\_ghg} & double & Total de gases de efeito estufa (Mt CO\textsubscript{2}eq). \\
+    \bottomrule
+  \end{tabular}
+  \caption{Dicionário de dados do \textit{dataset} final (\texttt{df\_join}).}
+  \label{tab:dicionario}
+\end{table}
+
+As colunas intermediárias do ETL --- \texttt{Month}, \texttt{Latitude}/\texttt{Longitude}
+(numéricas após a remoção de \texttt{[NSEW]}), \texttt{HistAvg} (média histórica por cidade
+usada no filtro de incerteza) e \texttt{Decada} --- são utilizadas nas etapas anteriores,
+mas \textbf{não} compõem o \textit{dataset} final do \textit{join}.
