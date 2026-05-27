@@ -102,9 +102,15 @@ services:
     ports:
       - "8888:8888"
       - "4040:4040"
+      - "7080:7080"
+      - "7081:7081"
     environment:
       - SPARK_MASTER=spark://spark-master:7077
       - JUPYTER_ENABLE_LAB=yes
+      - SPARK_DRIVER_HOST=100.93.153.29
+      - SPARK_DRIVER_BIND_ADDRESS=0.0.0.0
+      - SPARK_DRIVER_PORT=7080
+      - SPARK_BLOCK_MANAGER_PORT=7081
     volumes:
       - ./notebooks:/opt/spark/work-dir
       - ./spark-data:/opt/spark-data
