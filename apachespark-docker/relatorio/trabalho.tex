@@ -396,6 +396,13 @@ de quase todas as regiões. A ordenação por temperatura absoluta segue a latit
 leste europeu. Note que a média da Europa caiu em relação a uma amostra menor de países,
 ilustrando como a composição do conjunto afeta o valor absoluto.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.95\textwidth]{../spark-data/output/grafico_p2_anos_quentes_continente.png}
+  \caption{Top 10 anos mais quentes por continente (1974--2013).}
+  \label{fig:p2}
+\end{figure}
+
 \textbf{Limitação metodológica:} o \textit{dataset} não possui uma coluna de continente; o
 agrupamento por região foi montado manualmente. Embora agora abranja a quase totalidade
 dos países de cada região (tornando as médias bem mais representativas que um recorte
@@ -726,6 +733,42 @@ resultados (\textit{stage reuse}) e do \textit{cache}. Pontos a comentar nas cap
         \texttt{df\_limpo} aparece como persistido em memória, confirmando a otimização
         discutida na Seção~\ref{sec:cache}.
 \end{itemize}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{spark_ui_workers.png}
+  \caption{Spark Master UI (\texttt{localhost:8080}) com os 3 workers ativos.}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{spark_ui_jobs.png}
+  \caption{Aba Jobs da Spark UI durante a execução do pipeline.}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{spark_ui_dag.png}
+  \caption{DAG do stage mais pesado na Spark UI.}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{spark_ui_stages.png}
+  \caption{Aba Stages: distribuição de tarefas entre os executors.}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{spark_ui_storage.png}
+  \caption{Aba Storage: \texttt{df\_limpo} persistido em memória pelo \texttt{cache()}.}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.9\textwidth]{spark_ui_executors.png}
+  \caption{Aba Executors: 3 workers com tasks distribuídas.}
+\end{figure}
 
 % Espaco reservado para as capturas de tela da Spark UI:
 % \begin{figure}[H]
