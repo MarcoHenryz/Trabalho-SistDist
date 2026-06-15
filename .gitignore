@@ -1,2 +1,4 @@
 apachespark/data
 apachespark/.venv
+apachedocker/spark-events
+apachedocker/spark-data

@@ -1,0 +1,50 @@
+# Worker remoto — rode ESTE arquivo em qualquer PC que entre no cluster via Tailscale.
+# Master fica no PC do Marco: spark://100.93.153.29:7077
+#
+# ANTES DE SUBIR, troque <IP_TAILSCALE_DESTE_PC> pelo IP Tailscale DESTA máquina
+# (rode `tailscale ip -4` neste PC). Ex.: amigo = 100.67.50.47.
+#
+# Por que SPARK_LOCAL_IP = IP Tailscale deste PC:
+#   o executor anuncia esse IP pro shuffle. Se anunciar IP interno do Docker,
+#   outros executors remotos não conseguem puxar shuffle (NoRouteToHost).
+#
+# Subir:   docker compose -f worker-compose.remote.yml up -d
+# Logs:    docker compose -f worker-compose.remote.yml logs -f
+#
+# LINUX: network_mode: host funciona (container usa a stack de rede do host,
+#        bind direto no IP Tailscale).
+# WINDOWS/Docker Desktop: container NÃO faz bind no IP Tailscale do host.
+#        Rode o worker NATIVO no Windows (spark-class ...Worker com
+#        SPARK_LOCAL_IP=<ip tailscale>), ou use sidecar tailscale no container.
+
+services:
+  spark-worker:
+    image: apache/spark:3.5.0 # mesma versão do master/driver
+    container_name: spark-worker
+    network_mode: host
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://100.93.153.29:7077
+    environment:
+      - SPARK_WORKER_CORES=2
+      - SPARK_WORKER_MEMORY=4g
+      - SPARK_WORKER_PORT=7078 # porta RPC do worker
+      - SPARK_WORKER_WEBUI_PORT=8084 # UI do worker
+      - SPARK_PUBLIC_DNS=<IP_TAILSCALE_DESTE_PC>
+      - SPARK_LOCAL_IP=<IP_TAILSCALE_DESTE_PC>
+    restart: unless-stopped
+
+  # Segundo worker NO MESMO PC remoto (opcional) — só precisa de portas distintas.
+  # Descomente e ajuste:
+  #
+  # spark-worker-b:
+  #   image: apache/spark:3.5.0
+  #   container_name: spark-worker-b
+  #   network_mode: host
+  #   command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://100.93.153.29:7077
+  #   environment:
+  #     - SPARK_WORKER_CORES=2
+  #     - SPARK_WORKER_MEMORY=4g
+  #     - SPARK_WORKER_PORT=7088
+  #     - SPARK_WORKER_WEBUI_PORT=8085
+  #     - SPARK_PUBLIC_DNS=<IP_TAILSCALE_DESTE_PC>
+  #     - SPARK_LOCAL_IP=<IP_TAILSCALE_DESTE_PC>
+  #   restart: unless-stopped

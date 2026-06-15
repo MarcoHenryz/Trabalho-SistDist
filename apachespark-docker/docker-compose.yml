@@ -18,66 +18,6 @@ services:
     networks:
       - spark-network
 
-  spark-worker-1:
-    build: .
-    container_name: spark-worker-1
-    hostname: spark-worker-1
-    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
-    environment:
-      - SPARK_WORKER_CORES=2
-      - SPARK_WORKER_MEMORY=4g
-      - SPARK_WORKER_WEBUI_PORT=8081
-    ports:
-      - "8081:8081"
-    depends_on:
-      - spark-master
-    volumes:
-      - ./spark-apps:/opt/spark-apps
-      - ./spark-data:/opt/spark-data
-      - ./spark-events:/opt/spark/spark-events
-    networks:
-      - spark-network
-
-  spark-worker-2:
-    build: .
-    container_name: spark-worker-2
-    hostname: spark-worker-2
-    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
-    environment:
-      - SPARK_WORKER_CORES=2
-      - SPARK_WORKER_MEMORY=4g
-      - SPARK_WORKER_WEBUI_PORT=8082
-    ports:
-      - "8082:8082"
-    depends_on:
-      - spark-master
-    volumes:
-      - ./spark-apps:/opt/spark-apps
-      - ./spark-data:/opt/spark-data
-      - ./spark-events:/opt/spark/spark-events
-    networks:
-      - spark-network
-
-  # spark-worker-3:
-  #   build: .
-  #   container_name: spark-worker-3
-  #   hostname: spark-worker-3
-  #   command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
-  #   environment:
-  #     - SPARK_WORKER_CORES=2
-  #     - SPARK_WORKER_MEMORY=4g
-  #     - SPARK_WORKER_WEBUI_PORT=8083
-  #   ports:
-  #     - "8083:8083"
-  #   depends_on:
-  #     - spark-master
-  #   volumes:
-  #     - ./spark-apps:/opt/spark-apps
-  #     - ./spark-data:/opt/spark-data
-  #     - ./spark-events:/opt/spark/spark-events
-  #   networks:
-  #     - spark-network
-
   spark-history:
     image: apache/spark:3.5.0
     container_name: spark-history
@@ -107,7 +47,7 @@ services:
     environment:
       - SPARK_MASTER=spark://spark-master:7077
       - JUPYTER_ENABLE_LAB=yes
-      - SPARK_DRIVER_HOST=100.93.153.29
+      - SPARK_DRIVER_HOST=191.52.98.23
       - SPARK_DRIVER_BIND_ADDRESS=0.0.0.0
       - SPARK_DRIVER_PORT=7080
       - SPARK_BLOCK_MANAGER_PORT=7081
