@@ -11,7 +11,7 @@ def id_no(ip: str, porta: int) -> int:
 
     Usado como prioridade na eleicao (maior ID vence).
     """
-    octetos = ip.split(".")
+    octetos = ip.split(".")  # da split nos 4 octestos do ipv4
     if len(octetos) == 4 and all(o.isdigit() for o in octetos):
         base = sum(int(o) << (8 * (3 - i)) for i, o in enumerate(octetos))
     else:

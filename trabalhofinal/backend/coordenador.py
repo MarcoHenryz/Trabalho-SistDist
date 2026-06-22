@@ -225,7 +225,7 @@ class EstadoCoordenador:
             self._difundir_locks()  # objeto foi liberado/removido apos a operacao
         return sdwb_pb2.Resposta(ok=True, mensagem=f"seq={aplicada.sequencia}")
 
-    # ---------- exclusao mutua (Fase 3) ----------
+    # Exclusão mútua
 
     def selecionar(self, oid: str, id_cliente: str) -> sdwb_pb2.Resposta:
         with self._trava:
@@ -301,16 +301,20 @@ def servir(nome_quadro: str, porta: int, bloquear: bool = True):
     return servidor, estado
 
 
+# Entrada: ip serviço de nomes, nome do quadro, ip coord, porta coord.
+# Saida: OK de registrado com sucesso
 def registrar_no_nomes(nomes_addr: str, nome_quadro: str, ip: str, porta: int) -> bool:
     with grpc.insecure_channel(nomes_addr) as canal:
         stub = sdwb_pb2_grpc.ServicoNomesStub(canal)
         r = stub.RegistrarQuadro(
             sdwb_pb2.InfoQuadro(nome=nome_quadro, ip=ip, porta=porta)
-        )
-        print(f"[coord:{nome_quadro}] registro no servico de nomes: {r.mensagem}")
+        )  # chama função de registrar no serviço de nomes via RPC stub.
+        print(f"[coord:{nome_quadro}] registrado no servico de nomes: {r.mensagem}")
         return r.ok
 
 
+# Function: remover quadro do serviço de nomes
+# Entrada: endereço coord, nome do quadro
 def remover_do_nomes(nomes_addr: str, nome_quadro: str):
     try:
         with grpc.insecure_channel(nomes_addr) as canal:
@@ -324,6 +328,7 @@ def remover_do_nomes(nomes_addr: str, nome_quadro: str):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="Coordenador de um quadro SDWB")
+
     ap.add_argument("--nome", required=True, help="nome do quadro")
     ap.add_argument("--porta", type=int, required=True, help="porta do coordenador")
     ap.add_argument(
@@ -334,17 +339,15 @@ if __name__ == "__main__":
         default=f"127.0.0.1:{sn.PORTA_PADRAO}",
         help="endereco do servico de nomes",
     )
-    args = ap.parse_args()
+
+    args = ap.parse_args()  # recebe os parâmetros da linha de comando
 
     if not registrar_no_nomes(args.nomes, args.nome, args.ip, args.porta):
         raise SystemExit("falha ao registrar quadro (nome ja existe?)")
+    # retorna erro em caso de falha no registro.
 
     servidor, _estado = servir(args.nome, args.porta, bloquear=False)
 
-    # Saida graciosa (SIGTERM do cliente que criou, ou Ctrl-C): encerra o quadro
-    # removendo-o do Servico de Nomes. NOTA: isto cobre o caminho "sai/desliga
-    # gracioso". O caminho "cai" (SIGKILL, nao capturavel) sera tratado na Fase 4
-    # via heartbeat -> eleicao/encerramento pelos sobreviventes.
     import signal
 
     def encerrar(*_):
