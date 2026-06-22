@@ -1,0 +1,178 @@
+// SDWB
+// Contrato unico do protocolo.
+// Geracao dos stubs para os serviços
+//   python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. sdwb.proto
+
+syntax = "proto3";
+
+package sdwb;
+
+
+message Vazio {}
+
+// Resposta generica para operacoes que nao retornam dados.
+message Resposta {
+  bool ok = 1;
+  string mensagem = 2;
+}
+
+message Ponto {
+  double x = 1;
+  double y = 2;
+}
+
+enum TipoObjeto {
+  LINHA = 0;
+  QUADRADO = 1;
+}
+
+// Um objeto desenhavel do quadro. O 'id' é atribuido pelo Coordenador.
+message Objeto {
+  string id = 1;
+  TipoObjeto tipo = 2;
+  repeated Ponto pontos = 3;   // LINHA ou QUADRADO: 2 pontos em ambos os casos.
+  string cor = 4;
+  string grupo_id = 5;
+  string dono = 6; // id-cliente que criou o objeto
+}
+
+// Identificacao de um no participante (cliente ou coordenador).
+// id_cliente é unico e estavel; ip:porta apontam pro servidor gRPC do nó.
+message InfoMembro {
+  string id_cliente = 1;
+  string ip = 2;
+  int32 porta = 3;
+}
+
+// SERVIÇO DE NOMES
+
+
+// guarda SOMENTE (nome_do_quadro, ip, porta) dos
+// Coordenadores. Endereco fixo.
+
+// Pode retornar a informação de um quadro único, o nome de um quadro único ou uma lista com as informações de todos os quadros ativos.
+
+message InfoQuadro {
+  string nome = 1;
+  string ip = 2;     // ip do Coordenador atual do quadro
+  int32 porta = 3;   // porta do Coordenador atual do quadro
+}
+
+message NomeQuadro {
+  string nome = 1;
+}
+
+message ListaQuadros {
+  repeated InfoQuadro quadros = 1;
+}
+
+service ServicoNomes {
+  // Coordenador registra um novo quadro.
+  rpc RegistrarQuadro(InfoQuadro) returns (Resposta);
+  // Cliente lista os quadros disponiveis.
+  rpc ListarQuadros(Vazio) returns (ListaQuadros);
+  // Novo coordenador (apos realizar eleicao) atualiza o endereco do quadro.
+  rpc AtualizarQuadro(InfoQuadro) returns (Resposta);
+  // Quadro encerrado (coordenador sozinho saiu/caiu)
+  rpc RemoverQuadro(NomeQuadro) returns (Resposta);
+}
+
+// Coordenador
+// Servico a mais que é hospedado pelo nó que é o coordenador atual do quadro.
+
+// Operação enviada por um cliente ao Coordenador.
+enum TipoOperacao {
+  CRIAR = 0;     // cria objeto (objeto.id vazio; coordenador que atribui)
+  COLORIR = 1;   // recolore objeto existente (usa objeto_id + cor)
+  REMOVER = 2;   // remove objeto existente (usa objeto_id)
+}
+
+message Operacao {
+  TipoOperacao tipo = 1;
+  string id_cliente = 2;   // autor da operação
+  Objeto objeto = 3;       // para CRIAR
+  string objeto_id = 4;    // para COLORIR/REMOVER
+  string cor = 5;          // para COLORIR
+}
+
+// Estado atual do quadro completo entregue a um novo membro do quadro
+message EstadoQuadro {
+  repeated Objeto objetos = 1;
+  repeated InfoMembro membros = 2;
+  map<string, string> locks = 3;  // objeto_id -> id_cliente que selecionou
+  int64 ultima_sequencia = 4;
+}
+
+// Operacao ja ordenada (com numero de sequencia) e aplicada/difundida.
+message OperacaoAplicada {
+  int64 sequencia = 1;
+  Operacao operacao = 2;
+  Objeto objeto = 3;   // objeto resultante (com id atribuido) p/ CRIAR/COLORIR
+}
+
+// Eventos empurrados pelo Coordenador para cada membro.
+enum TipoEvento {
+  ESTADO_INICIAL = 0;    // primeiro evento: snapshot completo
+  OPERACAO = 1;          // uma operacao ordenada
+  MEMBROS = 2;           // lista de membros mudou
+  LOCK = 3;              // tabela de locks mudou (selecionar/liberar)
+  NOVO_COORDENADOR = 4;  // apos eleicao: novo endereco do coordenador
+}
+
+message Evento {
+  TipoEvento tipo = 1;
+  EstadoQuadro estado = 2;            // ESTADO_INICIAL
+  OperacaoAplicada operacao = 3;      // OPERACAO
+  repeated InfoMembro membros = 4;    // MEMBROS / ESTADO_INICIAL
+  map<string, string> locks = 5;      // LOCK
+  InfoMembro novo_coordenador = 6;    // NOVO_COORDENADOR
+}
+
+message PedidoJoin {
+  InfoMembro membro = 1;
+}
+
+message PedidoLock {
+  string objeto_id = 1;
+  string id_cliente = 2;
+}
+
+service Coordenador {
+  // Cliente chama uma vez; recebe ESTADO_INICIAL e a stream fica aberta
+  // para o Coordenador enviar cada evento novo (broadcast).
+  rpc Join(PedidoJoin) returns (stream Evento);
+
+  // Desenhar / colorir / remover. Coordenador atribui sequencia e difunde.
+  rpc EnviarOperacao(Operacao) returns (Resposta);
+
+  // Exclusao mutua por objeto.
+  rpc Selecionar(PedidoLock) returns (Resposta);
+  rpc Liberar(PedidoLock) returns (Resposta);
+
+  // Heartbeat centralizado: cliente envia mensagem a coordenador a cada T segundos.
+  rpc Heartbeat(InfoMembro) returns (Resposta);
+
+  // Saida explícita do quadro, distinta de queda por timeout.
+  rpc Sair(InfoMembro) returns (Resposta);
+}
+
+// Nó / Eleicao 
+// Servico hospedado por TODOS os nós (sempre ativo), mesmo quando o nó é
+// apenas cliente. Permite receber mensagens de eleição do novo coordenador.
+
+message PedidoEleicao {
+  int64 id = 1;          // id do no que iniciou a eleicao
+  InfoMembro membro = 2;
+}
+
+message AnuncioCoordenador {
+  InfoMembro coordenador = 1;  // novo coordenador eleito
+  string nome_quadro = 2;
+}
+
+service No {
+  // nó manda Eleicao a IDs maiores; quem responde ok assume a frente.
+  rpc Eleicao(PedidoEleicao) returns (Resposta);
+  // Vencedor difunde que ele é o novo coordenador.
+  rpc AnunciarCoordenador(AnuncioCoordenador) returns (Resposta);
+}
