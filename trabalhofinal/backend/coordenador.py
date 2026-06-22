@@ -19,24 +19,35 @@ import sdwb_pb2_grpc
 import servico_nomes as sn
 
 # Heartbeat: cliente envia para o coordenador a cada 2 segundos; quem passar
-# de 4 sem dar sinal é removido da lista de membros.
+# de 4 sem dar sinal é removido da lista de membros. (T_HEARTBEAT * FATOR_TIMEOUT)
 T_HEARTBEAT = 2.0
 FATOR_TIMEOUT = 2
 
 
 class EstadoCoordenador:
-    def __init__(self, nome_quadro: str):
+    def __init__(self, nome_quadro: str):  # inicializa a partir do nome do quadro
         self.nome_quadro = nome_quadro
         self._trava = threading.RLock()
-        self._objetos: dict[str, sdwb_pb2.Objeto] = {}
-        self._membros: dict[str, sdwb_pb2.InfoMembro] = {}
-        self._locks: dict[str, str] = {}  # objeto_id -> id_cliente
+        self._objetos: dict[
+            str, sdwb_pb2.Objeto
+        ] = {}  # dicionário de objetos do quadro
+        self._membros: dict[
+            str, sdwb_pb2.InfoMembro
+        ] = {}  # dicionários com clientes do quadro
+        self._locks: dict[
+            str, str
+        ] = {}  # objeto_id -> id_cliente # controle de quem está utilizando certo objeto
         self._sequencia = 0
         self._proximo_obj = 0
-        # id_cliente -> Queue de Evento (uma fila por stream do Join)
-        self._filas: dict[str, queue.Queue] = {}
-        # heartbeat: id_cliente -> instante do ultimo sinal
-        self._ultimo_visto: dict[str, float] = {}
+
+        self._filas: dict[
+            str, queue.Queue
+        ] = {}  # id_cliente -> Queue de Evento (uma fila por stream do Join)
+
+        self._ultimo_visto: dict[
+            str, float
+        ] = {}  # heartbeat: id_cliente -> instante do ultimo sinal
+
         self._monitor = None
         self._parar_monitor = threading.Event()
 
@@ -47,16 +58,21 @@ class EstadoCoordenador:
         """Reconstroi o estado (usado na migracao apos
         eleicao). O novo coordenador ja tinha tudo replicado como cliente."""
         est = cls(nome_quadro)
+        # para cada objeto no quadro
         for o in snap.objetos:
             novo = sdwb_pb2.Objeto()
-            novo.CopyFrom(o)
-            est._objetos[novo.id] = novo
+            novo.CopyFrom(o)  # copia objeto
+            est._objetos[novo.id] = novo  # adiciona na lista do novo quadro
+        # para cada membro na lista de membros
         for m in snap.membros:
-            est._membros[m.id_cliente] = m
-            est._ultimo_visto[m.id_cliente] = time.monotonic()
-        est._locks = dict(snap.locks)
-        est._sequencia = snap.ultima_sequencia
-        # continua a numeracao de ids sem colidir
+            est._membros[m.id_cliente] = m  # adiciona membro no quadro
+            est._ultimo_visto[m.id_cliente] = (
+                time.monotonic()
+            )  # inicia counter de controle do heartbeat
+        est._locks = dict(snap.locks)  # pega os locks atuais
+        est._sequencia = (
+            snap.ultima_sequencia
+        )  # nao reseta o contador de sequencia de objetos
         maior = 0
         for oid in est._objetos:
             if oid.startswith("obj-") and oid[4:].isdigit():
@@ -82,7 +98,7 @@ class EstadoCoordenador:
         with self._trava:
             self._membros[membro.id_cliente] = membro
             self._ultimo_visto[membro.id_cliente] = time.monotonic()
-            fila: queue.Queue = queue.Queue()
+            fila: queue.Queue = queue.Queue()  # inicia sua fila de eventos
             self._filas[membro.id_cliente] = fila
             fila.put(
                 sdwb_pb2.Evento(
@@ -90,7 +106,7 @@ class EstadoCoordenador:
                     estado=self.snapshot(),
                     membros=list(self._membros.values()),
                 )
-            )
+            )  # manda o evento de entrada
         self._difundir_membros()
         print(
             f"[coordenador:{self.nome_quadro}] entrou {membro.id_cliente} "
@@ -106,17 +122,17 @@ class EstadoCoordenador:
             # libera quaisquer locks presos por quem saiu
             for oid in [o for o, c in self._locks.items() if c == id_cliente]:
                 del self._locks[oid]
-        self._difundir_membros()
+        self._difundir_membros()  # difunde aos demais que um membro saiu
         print(
             f"[coordenador:{self.nome_quadro}] saiu {id_cliente}; membros={self._n_membros()}"
         )
 
+    # Função que retorna quantidade de membros no quadro
     def _n_membros(self) -> int:
         with self._trava:
             return len(self._membros)
 
-    # heartbeat
-
+    # inicia contagem para heartbeat
     def registrar_heartbeat(self, id_cliente: str):
         with self._trava:
             if id_cliente in self._membros:
@@ -134,6 +150,7 @@ class EstadoCoordenador:
     def parar_monitor_heartbeat(self):
         self._parar_monitor.set()
 
+    # itera na lista de ultimo visto e verifica se estourou o limite de tempo do heatbeat, se sim remove o membro
     def _loop_monitor(self):
         limite = FATOR_TIMEOUT * T_HEARTBEAT
         while not self._parar_monitor.wait(T_HEARTBEAT):
@@ -150,12 +167,14 @@ class EstadoCoordenador:
 
     # broadcast
 
+    # para cada fila dos clientes, adiciona o evento que aconteceu.
     def _difundir(self, evento: sdwb_pb2.Evento):
         with self._trava:
             filas = list(self._filas.values())
         for f in filas:
             f.put(evento)
 
+    # Difunde um novo membro para todos os membros atuais
     def _difundir_membros(self):
         with self._trava:
             membros = list(self._membros.values())
@@ -168,12 +187,14 @@ class EstadoCoordenador:
 
     # operacoes
 
+    # Entrada: Struct Operacao (Tipo de operacao[CRIAR,COLORIR,REMOVER], id_cliente, objeto -> CRIAR, objeto_id -> COLORIR, cor -> COLORIR)
     def aplicar_operacao(self, op: sdwb_pb2.Operacao) -> sdwb_pb2.Resposta:
         """Ordena (sequencia/id), aplica na replica local e difunde a todos."""
         with self._trava:
             objeto_resultante = None
             lock_mudou = False
 
+            # cria novo objeto
             if op.tipo == sdwb_pb2.CRIAR:
                 self._proximo_obj += 1
                 novo = sdwb_pb2.Objeto()
@@ -183,15 +204,18 @@ class EstadoCoordenador:
                 self._objetos[novo.id] = novo
                 objeto_resultante = novo
 
+            # colore objeto existente
             elif op.tipo == sdwb_pb2.COLORIR:
                 alvo = self._objetos.get(op.objeto_id)
                 if alvo is None:
                     return sdwb_pb2.Resposta(ok=False, mensagem="objeto inexistente")
+
                 # exclusao mutua: so opera quem detem o lock do objeto
                 if self._locks.get(op.objeto_id) != op.id_cliente:
                     return sdwb_pb2.Resposta(
                         ok=False, mensagem="selecione o objeto antes de colorir"
                     )
+
                 alvo.cor = op.cor
                 objeto_resultante = alvo
                 self._locks.pop(op.objeto_id, None)  # libera apos operar
@@ -225,8 +249,11 @@ class EstadoCoordenador:
             self._difundir_locks()  # objeto foi liberado/removido apos a operacao
         return sdwb_pb2.Resposta(ok=True, mensagem=f"seq={aplicada.sequencia}")
 
-    # Exclusão mútua
+    # Exclusão mútua selecionar objetos
 
+    # Função para selecionar objeto
+    # Entrada: id do objeto, id do cliente que quer selecionar
+    # Retorna: Confirmação de objeto selecionado ou objeto inexeistente ou objeto já selecionado
     def selecionar(self, oid: str, id_cliente: str) -> sdwb_pb2.Resposta:
         with self._trava:
             if oid not in self._objetos:
@@ -240,6 +267,9 @@ class EstadoCoordenador:
         self._difundir_locks()
         return sdwb_pb2.Resposta(ok=True, mensagem="selecionado")
 
+    # Liberar um objeto
+    # Entrada: id do objeto, id do cliente em uso do objeto
+    # Retorna: Confirmação de liberação
     def liberar(self, oid: str, id_cliente: str) -> sdwb_pb2.Resposta:
         with self._trava:
             if self._locks.get(oid) == id_cliente:
@@ -248,10 +278,12 @@ class EstadoCoordenador:
         return sdwb_pb2.Resposta(ok=True, mensagem="liberado")
 
 
+# CoordenadorServicer grpc
 class CoordenadorServicer(sdwb_pb2_grpc.CoordenadorServicer):
     def __init__(self, estado: EstadoCoordenador):
         self.estado = estado
 
+    # Entrada: Struct InfoMembro(id_cliente, ip, porta)
     def Join(self, pedido, contexto):
         membro = pedido.membro
         fila = self.estado.registrar_membro(membro)
@@ -259,42 +291,55 @@ class CoordenadorServicer(sdwb_pb2_grpc.CoordenadorServicer):
         def ao_encerrar():
             self.estado.remover_membro(membro.id_cliente)
 
-        contexto.add_callback(ao_encerrar)
+        # contexto é um objeto gRPC que representa esse conexão
+
+        contexto.add_callback(
+            ao_encerrar
+        )  # adiciona callback para se o cliente desconectar / fechar conexão
 
         while contexto.is_active():
             try:
                 evento = fila.get(timeout=1.0)
             except queue.Empty:
                 continue
-            yield evento
+            yield evento  # empurra cada evento pela stream
+            # Enquanto a conexão vive não há retorno
+
+    # Entrada: Struct Operacao(Tipo operacao, id cliente, objeto, objeto_id, cor)
 
     def EnviarOperacao(self, pedido, contexto):
         return self.estado.aplicar_operacao(pedido)
 
+    # Entrada: Struct PedidoLock (objeto_id, id_cliente)
     def Selecionar(self, pedido, contexto):
         return self.estado.selecionar(pedido.objeto_id, pedido.id_cliente)
 
+    # Entrada: Struct PeidoLock (objeto_id, id_cliente)
     def Liberar(self, pedido, contexto):
         return self.estado.liberar(pedido.objeto_id, pedido.id_cliente)
 
+    # Entrada: Struct InfoMembro (id_cliente, ip, porta)
     def Heartbeat(self, pedido, contexto):
         self.estado.registrar_heartbeat(pedido.id_cliente)
         return sdwb_pb2.Resposta(ok=True, mensagem="pong")
 
+    # Entrada: Struct InfoMembro (id_cliente, ip, porta)
     def Sair(self, pedido, contexto):
         self.estado.remover_membro(pedido.id_cliente)
         return sdwb_pb2.Resposta(ok=True, mensagem="saiu")
 
 
 def servir(nome_quadro: str, porta: int, bloquear: bool = True):
-    estado = EstadoCoordenador(nome_quadro)
+    estado = EstadoCoordenador(
+        nome_quadro
+    )  # instancia classe estado coordenador, com nome do quadro
     servidor = grpc.server(futures.ThreadPoolExecutor(max_workers=16))
     sdwb_pb2_grpc.add_CoordenadorServicer_to_server(
         CoordenadorServicer(estado), servidor
     )
     servidor.add_insecure_port(f"[::]:{porta}")
-    servidor.start()
-    estado.iniciar_monitor_heartbeat()
+    servidor.start()  # Inicia servidor para receber chamadas grpc
+    estado.iniciar_monitor_heartbeat()  # inicia thread para controle de loop do heartbeat
     print(f"[coord:{nome_quadro}] Coordenador ouvindo na porta {porta}")
     if bloquear:
         servidor.wait_for_termination()
