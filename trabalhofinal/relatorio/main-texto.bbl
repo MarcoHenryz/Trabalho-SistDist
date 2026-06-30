@@ -1,0 +1,30 @@
+\begin{thebibliography}{CDKB11}
+
+\bibitem[CDKB11]{coulouris}
+George Coulouris, Jean Dollimore, Tim Kindberg, and Gordon Blair.
+\newblock {\em Distributed Systems: Concepts and Design}.
+\newblock Addison-Wesley, 5 edition, 2011.
+
+\bibitem[GM82]{bully}
+Hector Garcia-Molina.
+\newblock Elections in a distributed computing system.
+\newblock {\em IEEE Transactions on Computers}, C-31(1):48--59, 1982.
+
+\bibitem[{Goo}24]{protobuf}
+{Google}.
+\newblock {Protocol Buffers: Language Guide (proto3)}.
+\newblock \url{https://protobuf.dev/programming-guides/proto3/}, 2024.
+\newblock Acesso em 2026.
+
+\bibitem[{gRP}24]{grpc}
+{gRPC Authors}.
+\newblock {gRPC: A high performance, open source universal RPC framework}.
+\newblock \url{https://grpc.io/docs/}, 2024.
+\newblock Acesso em 2026.
+
+\bibitem[TvS17]{tanenbaum}
+Andrew~S. Tanenbaum and Maarten van Steen.
+\newblock {\em Distributed Systems: Principles and Paradigms}.
+\newblock Pearson, 3 edition, 2017.
+
+\end{thebibliography}

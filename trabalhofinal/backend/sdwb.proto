@@ -37,7 +37,7 @@ message Objeto {
 }
 
 // Identificacao de um no participante (cliente ou coordenador).
-// id_cliente é unico e estavel; ip:porta apontam pro servidor gRPC do nó.
+// id_cconexãoliente é unico e estavel; ip:porta apontam pro servidor gRPC do nó.
 message InfoMembro {
   string id_cliente = 1;
   string ip = 2;
@@ -51,6 +51,8 @@ message InfoMembro {
 // Coordenadores. Endereco fixo.
 
 // Pode retornar a informação de um quadro único, o nome de um quadro único ou uma lista com as informações de todos os quadros ativos.
+
+//MENSAGENS SERVIÇO DE NOMES
 
 message InfoQuadro {
   string nome = 1;
@@ -66,6 +68,8 @@ message ListaQuadros {
   repeated InfoQuadro quadros = 1;
 }
 
+// Serviço de nomes em si
+
 service ServicoNomes {
   // Coordenador registra um novo quadro.
   rpc RegistrarQuadro(InfoQuadro) returns (Resposta);
@@ -77,10 +81,10 @@ service ServicoNomes {
   rpc RemoverQuadro(NomeQuadro) returns (Resposta);
 }
 
-// Coordenador
+// COORDENADOR
 // Servico a mais que é hospedado pelo nó que é o coordenador atual do quadro.
-
 // Operação enviada por um cliente ao Coordenador.
+//
 enum TipoOperacao {
   CRIAR = 0;     // cria objeto (objeto.id vazio; coordenador que atribui)
   COLORIR = 1;   // recolore objeto existente (usa objeto_id + cor)
@@ -95,11 +99,11 @@ message Operacao {
   string cor = 5;          // para COLORIR
 }
 
-// Estado atual do quadro completo entregue a um novo membro do quadro
+// ESTADO ATUAL do quadro COMPLETO, entregue a um novo membro que entra no quadro.
 message EstadoQuadro {
   repeated Objeto objetos = 1;
   repeated InfoMembro membros = 2;
-  map<string, string> locks = 3;  // objeto_id -> id_cliente que selecionou
+  map<string, string> locks = 3;  // objeto_id -> id_cliente que selecionou um objeto
   int64 ultima_sequencia = 4;
 }
 

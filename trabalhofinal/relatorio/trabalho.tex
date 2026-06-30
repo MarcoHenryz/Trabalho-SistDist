@@ -1,0 +1,297 @@
+\section{Arquitetura}
+\label{sec:arquitetura}
+
+O SDWB é uma \textbf{máquina de estado replicada com coordenador migrante}. Não é um
+sistema cliente--servidor clássico: o estado completo do quadro vive replicado em todos os
+nós, e o papel de Coordenador é apenas um \emph{serviço} que pode rodar em qualquer nó e
+migrar entre eles. O sistema tem três componentes.
+
+\begin{itemize}
+  \item \textbf{Serviço de Nomes} --- as ``Páginas Amarelas''. Processo separado, com
+        endereço fixo, que guarda \emph{somente} a tabela
+        \texttt{(nome\_do\_quadro, ip, porta)} dos Coordenadores. Por enunciado, nunca
+        falha; logo, é mantido simples, sem replicação.
+  \item \textbf{Coordenador do Quadro} --- serviço que \emph{ordena} as operações (atribui
+        número de sequência e identificadores), faz \emph{broadcast} para todos, mantém a
+        lista de membros, a tabela de travas e conduz a eleição. ``Coordenador = quadro'':
+        é um serviço, não uma máquina.
+  \item \textbf{Cliente / Nó} --- interface gráfica (Tkinter) mais a réplica local do
+        estado. Cada nó sobe um \textbf{servidor gRPC sempre ativo}, mesmo quando é apenas
+        cliente --- é o que lhe permite receber mensagens de eleição e, eventualmente,
+        tornar-se Coordenador.
+\end{itemize}
+
+\subsection{Coordenador in-process e migração}
+
+A decisão arquitetural central é que \textbf{cada nó hospeda, no mesmo processo, um único
+servidor gRPC} que publica dois serviços: \texttt{No} (eleição, sempre ativo) e
+\texttt{Coordenador} (ativo apenas no nó que coordena o quadro; nos demais fica dormente e
+rejeita chamadas). Isso reflete diretamente o enunciado --- ``o Coordenador é um dos
+próprios nós'' e ``quando o cliente onde está o Coordenador sai do quadro, este mesmo
+cliente continua hospedando o quadro''. Quando um nó cria um quadro ou vence uma eleição,
+ele simplesmente \emph{ativa} o seu \texttt{Coordenador} com a réplica que já mantinha; não
+há transferência de estado nem processos auxiliares.
+
+\subsection{Modelo de dados}
+
+Cada elemento desenhável é um \texttt{Objeto}:
+
+\begin{lstlisting}[language={},caption={Modelo de objeto (sdwb.proto)}]
+Objeto = { id, tipo: LINHA|QUADRADO, pontos: [[x,y],...], cor, dono }
+\end{lstlisting}
+
+O \texttt{id} é atribuído pelo Coordenador (garante unicidade global). O estado do quadro
+é o conjunto: dicionário de objetos $+$ lista de membros \texttt{(id\_cliente, ip, porta)}
+$+$ tabela de travas \texttt{\{objeto\_id: id\_cliente\}} $+$ último número de sequência.
+
+\subsection{Organização do código}
+
+O projeto separa rede de interface: \texttt{backend/} contém o contrato e a lógica
+distribuída --- \texttt{sdwb.proto}, os \emph{stubs} gerados, \texttt{servico\_nomes.py},
+\texttt{coordenador.py} (estado do quadro + heartbeat) e \texttt{no.py} (o Nó: servidor
+gRPC, réplica, heartbeat e eleição). O \texttt{frontend/cliente.py} é uma camada de
+visualização fina sobre um \texttt{No}.
+
+\section{Protocolo de mensagens (gRPC)}
+\label{sec:protocolo}
+
+O arquivo \texttt{sdwb.proto} é a fonte única do protocolo. Os \emph{stubs} são gerados
+com:
+
+\begin{lstlisting}[language=bash]
+python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. sdwb.proto
+\end{lstlisting}
+
+\subsection{Serviço \texttt{ServicoNomes}}
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{RPC} & \textbf{Entrada} & \textbf{Quando} \\
+    \midrule
+    \texttt{RegistrarQuadro} & \texttt{InfoQuadro} & Coordenador cria um quadro \\
+    \texttt{ListarQuadros}   & \texttt{Vazio}      & Cliente busca quadros disponíveis \\
+    \texttt{AtualizarQuadro} & \texttt{InfoQuadro} & Novo Coordenador (pós-eleição) \\
+    \texttt{RemoverQuadro}   & \texttt{NomeQuadro} & Quadro encerrado \\
+    \bottomrule
+  \end{tabular}
+  \caption{RPCs do Serviço de Nomes. \texttt{InfoQuadro = (nome, ip, porta)}.}
+\end{table}
+
+\subsection{Serviço \texttt{Coordenador}}
+
+Hospedado pelo nó que coordena o quadro.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{RPC} & \textbf{Tipo} & \textbf{Função} \\
+    \midrule
+    \texttt{Join}           & \emph{server-streaming} & Onboarding + broadcast \\
+    \texttt{EnviarOperacao} & unário & Desenhar/colorir/remover \\
+    \texttt{Selecionar}     & unário & Adquirir trava de um objeto \\
+    \texttt{Liberar}        & unário & Liberar a trava \\
+    \texttt{Heartbeat}      & unário & Sinal de vida periódico \\
+    \texttt{Sair}           & unário & Saída graciosa \\
+    \bottomrule
+  \end{tabular}
+  \caption{RPCs do Coordenador.}
+\end{table}
+
+O \texttt{Join} é o coração do sistema. O cliente o chama \emph{uma vez}; recebe primeiro
+um evento \texttt{ESTADO\_INICIAL} (\emph{snapshot} completo) e mantém a conexão aberta,
+pela qual o Coordenador \emph{empurra} cada evento novo:
+
+\begin{lstlisting}[language={},caption={Streaming do Join}]
+rpc Join(PedidoJoin) returns (stream Evento);
+\end{lstlisting}
+
+Os eventos difundidos são tipados por \texttt{TipoEvento}:
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    \textbf{TipoEvento} & \textbf{Carga} \\
+    \midrule
+    \texttt{ESTADO\_INICIAL}   & \emph{snapshot} completo (objetos, membros, travas, seq) \\
+    \texttt{OPERACAO}          & operação ordenada (\texttt{OperacaoAplicada}: seq + objeto) \\
+    \texttt{MEMBROS}           & lista de membros atualizada \\
+    \texttt{LOCK}              & tabela de travas atualizada \\
+    \texttt{NOVO\_COORDENADOR} & endereço do novo coordenador (pós-eleição) \\
+    \bottomrule
+  \end{tabular}
+  \caption{Eventos empurrados pela stream do Join.}
+\end{table}
+
+Uma \texttt{Operacao} carrega \texttt{TipoOperacao} $\in \{$\texttt{CRIAR}, \texttt{COLORIR},
+\texttt{REMOVER}$\}$, o \texttt{id\_cliente} autor e os campos pertinentes (objeto a criar,
+ou \texttt{objeto\_id} e \texttt{cor}).
+
+\subsection{Serviço \texttt{No} (eleição)}
+
+Hospedado por \emph{todos} os nós, sempre ativo.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{RPC} & \textbf{Entrada} & \textbf{Função} \\
+    \midrule
+    \texttt{Eleicao}            & \texttt{PedidoEleicao}     & Valentão: aviso de eleição a IDs maiores \\
+    \texttt{AnunciarCoordenador}& \texttt{AnuncioCoordenador}& Vencedor divulga o novo coordenador \\
+    \bottomrule
+  \end{tabular}
+  \caption{RPCs de eleição.}
+\end{table}
+
+\section{Descoberta e \emph{onboarding}}
+\label{sec:descoberta}
+
+O endereço do Coordenador nunca é fixo no cliente. O fluxo de entrada é:
+
+\begin{enumerate}
+  \item o cliente consulta \texttt{ListarQuadros} no Serviço de Nomes e escolhe um quadro;
+  \item conecta-se ao Coordenador daquele quadro e chama \texttt{Join}, passando seu
+        \texttt{(id\_cliente, ip, porta)};
+  \item recebe \texttt{ESTADO\_INICIAL} com todos os desenhos e a lista de participantes.
+\end{enumerate}
+
+\emph{Critério de aceite atendido:} um novo nó vê todos os desenhos existentes
+imediatamente ao entrar.
+
+\section{Ordenação e consistência}
+\label{sec:ordenacao}
+
+Toda operação passa pelo Coordenador, que lhe atribui um número de sequência crescente e a
+difunde a todos os membros --- \emph{inclusive ao autor}. A interface \textbf{não renderiza
+localmente} antes do broadcast: o desenho só aparece quando o evento \texttt{OPERACAO}
+retorna pela stream. Como todos aplicam as operações na mesma ordem (a ordem de sequência),
+as réplicas convergem identicamente. A criação de objetos também é serializada no
+Coordenador, que gera \texttt{id}s globais (\texttt{obj-1}, \texttt{obj-2}, \ldots),
+evitando colisões.
+
+\section{Exclusão mútua}
+\label{sec:exclusao}
+
+Antes de \emph{colorir} ou \emph{remover}, o cliente precisa \textbf{selecionar} o objeto.
+O Coordenador mantém a tabela \texttt{\{objeto\_id: id\_cliente\}}; ao receber
+\texttt{Selecionar}, concede a trava se o objeto estiver livre e \textbf{recusa} (mensagem
+de erro) se já estiver travado por outro cliente. A operação de \texttt{COLORIR}/%
+\texttt{REMOVER} é validada no Coordenador: só prossegue se o autor detém a trava, que é
+liberada automaticamente após a operação. Travar/liberar gera um evento \texttt{LOCK}
+difundido a todos, permitindo destacar visualmente o objeto em uso (traço grosso para o
+próprio, tracejado para travas de outros).
+
+\paragraph{Por que centralizada.} Há três algoritmos clássicos de exclusão mútua
+distribuída~\citep{tanenbaum}: \emph{centralizado} (um coordenador concede/nega o acesso),
+\emph{token ring} (um \emph{token} circula em anel) e \emph{distribuído}
+(Ricart--Agrawala, pedindo permissão a todos). O SDWB usa o \textbf{algoritmo
+centralizado}: ele é o coerente com a arquitetura, que já possui um Coordenador ordenando
+todas as operações. \emph{Token ring} e Ricart--Agrawala seriam apropriados na ausência de
+um coordenador; aqui seriam redundantes. O ponto único de falha do Coordenador é tratado
+não por outro algoritmo de exclusão, mas pela \textbf{eleição}
+(Seção~\ref{sec:tolerancia}): o novo Coordenador assume já com a tabela de travas
+replicada.
+
+\emph{Critério de aceite atendido:} dois clientes não conseguem operar o mesmo objeto ao
+mesmo tempo.
+
+\section{Tolerância a falhas}
+\label{sec:tolerancia}
+
+\subsection{Heartbeat centralizado}
+
+Cada cliente envia \texttt{Heartbeat} ao Coordenador a cada \texttt{T} segundos
+($T = 2$\,s). O Coordenador registra o instante do último sinal de cada membro; uma thread
+monitora a tabela e \textbf{remove} quem passar de \texttt{2T} sem dar notícia, difundindo
+a lista de membros atualizada. A ausência de notificação é a forma centralizada de detecção
+de falha exigida pelo enunciado.
+
+\subsection{Detecção da queda do Coordenador}
+
+Para o cliente, a falha da própria conexão com o Coordenador é o gatilho da eleição. Isso é
+detectado de duas maneiras complementares: (i) a \emph{stream} do \texttt{Join} é encerrada
+inesperadamente, ou (ii) uma chamada de \texttt{Heartbeat} falha. Qualquer das duas dispara
+o procedimento de eleição (protegido por uma trava para não disparar duas vezes).
+
+\subsection{Eleição do Valentão (\emph{Bully})}
+
+Cada nó possui um \textbf{ID} inteiro, derivado de \texttt{ip:porta}. Ao detectar a queda
+do Coordenador, o nó executa o algoritmo do Valentão~\citep{bully}:
+
+\begin{enumerate}
+  \item envia \texttt{Eleicao} a todos os membros de \textbf{ID maior} que o seu (exceto o
+        Coordenador morto);
+  \item se \emph{algum} responder, recua e aguarda o anúncio do novo Coordenador (com
+        \emph{timeout} e nova tentativa se nada chegar);
+  \item se \emph{nenhum} responder, declara-se vencedor.
+\end{enumerate}
+
+Quem recebe um \texttt{Eleicao} de um ID menor responde ``vivo'' e inicia a sua própria
+eleição --- garantindo que o nó de maior ID entre os sobreviventes prevaleça.
+
+\subsection{Recuperação}
+
+O vencedor reconstrói o estado a partir da sua própria réplica (objetos, membros, travas e
+sequência) --- método \texttt{EstadoCoordenador.de\_snapshot} --- ativa o seu serviço
+\texttt{Coordenador}, chama \texttt{AtualizarQuadro} no Serviço de Nomes com o novo endereço
+e envia \texttt{AnunciarCoordenador} aos demais. Cada nó, ao receber o anúncio, reconecta o
+\texttt{Join} ao novo Coordenador e recebe um novo \texttt{ESTADO\_INICIAL}. Como o estado
+já estava replicado, \textbf{nada é perdido}.
+
+\subsection{Modelo de falha do host do Coordenador}
+
+O enunciado distingue ``sair'' (saída graciosa, com mensagem) de ``cair'' (queda detectada
+por \emph{timeout}); são caminhos de código distintos:
+
+\begin{itemize}
+  \item \textbf{Sai} (botão Sair) \textbf{e há outros membros} $\Rightarrow$ o Coordenador
+        \emph{continua} naquela mesma máquina; \textbf{sem eleição}.
+  \item \textbf{Cai} (processo morto / janela fechada) \textbf{e há outros membros}
+        $\Rightarrow$ eleição $\rightarrow$ novo host assume $\rightarrow$ atualiza o
+        Serviço de Nomes.
+  \item \textbf{Coordenador sozinho} e sai ou cai $\Rightarrow$ o quadro \textbf{encerra}
+        (removido do Serviço de Nomes).
+\end{itemize}
+
+\emph{Critério de aceite atendido:} o sistema continua operando após a queda de qualquer
+nó.
+
+\section{Cenários de teste obrigatórios}
+\label{sec:testes}
+
+Os três cenários do enunciado são cobertos por testes de fumaça automatizados, executáveis
+em conjunto por \texttt{python rodar\_testes.py}.
+
+\begin{table}[H]
+  \centering
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Cenário} & \textbf{Teste} & \textbf{Verifica} \\
+    \midrule
+    1. Entrada dinâmica & \texttt{teste\_fumaca\_quadro.py} & descoberta, onboarding, ordenação, broadcast \\
+    2. Concorrência     & \texttt{teste\_fumaca\_exclusao.py} & exclusão mútua por objeto \\
+    3. Morte do coord.  & \texttt{teste\_fumaca\_eleicao.py} & eleição do Valentão + migração \\
+    \bottomrule
+  \end{tabular}
+  \caption{Mapeamento cenário $\rightarrow$ teste. Todos passam (5/5 com os auxiliares).}
+\end{table}
+
+No cenário~3, três nós entram num quadro; o Coordenador (que o criou) é morto; os
+sobreviventes detectam a queda, elegem o de maior ID, que atualiza o Serviço de Nomes e
+mantém o objeto desenhado antes da falha --- e o sistema segue aceitando novas operações.
+
+\section{Execução}
+\label{sec:execucao}
+
+\begin{enumerate}
+  \item Serviço de Nomes (porta 50000): \texttt{cd backend \&\& python servico\_nomes.py}.
+  \item Clientes: \texttt{cd frontend \&\& python cliente.py} (uma janela por participante).
+        \emph{Criar novo quadro} torna o nó coordenador; \emph{Ingressar} conecta a um
+        quadro existente.
+  \item Demonstrar falha: matar o processo do nó coordenador --- os demais elegem um novo
+        automaticamente.
+\end{enumerate}

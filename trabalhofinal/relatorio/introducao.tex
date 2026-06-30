@@ -1,0 +1,31 @@
+\section{Introdução}
+\label{sec:introducao}
+
+O \textbf{Shared Distributed Write Board} (SDWB) é um quadro branco colaborativo no qual
+múltiplos terminais desenham em tempo real sobre uma mesma tela compartilhada. O sistema
+\emph{não} possui um servidor fixo: a descoberta dos quadros é feita por um
+\textbf{Serviço de Nomes} e a ordenação das operações fica a cargo de um
+\textbf{Coordenador migrante} --- um dos próprios nós que, ao falhar, é substituído por
+outro por meio de uma eleição. Esse arranjo exige lidar com os três problemas centrais de
+qualquer sistema distribuído real: \textbf{descoberta}, \textbf{consenso} (ordenação e
+exclusão mútua) e \textbf{recuperação} (tolerância a falhas).
+
+A arquitetura adotada é a de uma \textbf{máquina de estado replicada}: todo nó mantém uma
+réplica completa do quadro (objetos, lista de participantes e tabela de travas). O
+Coordenador não é dono do estado; ele apenas \emph{ordena} as operações --- atribuindo um
+número de sequência --- e as \emph{difunde} (\emph{broadcast}) a todos. Como o estado já
+está replicado em todos os nós, quando o Coordenador cai o vencedor da eleição assume sem
+reconstruir nada.
+
+A comunicação usa \textbf{gRPC}~\citep{grpc} sobre Python~3, com o arquivo
+\texttt{sdwb.proto} servindo de contrato único e documentação do protocolo. A interface
+gráfica é construída em \texttt{Tkinter}. Toda a lógica distribuída --- exclusão mútua,
+detecção de falhas e eleição --- foi implementada manualmente, sem coordenadores externos
+prontos (Zookeeper, etcd, Consul).
+
+\paragraph{Decisão de escopo.} O enunciado oficial apresenta a seção de
+\emph{Controle de Transações Distribuídas (2PC)} \textbf{riscada} (tachada). Por orientação
+do professor, o protocolo \emph{Two-Phase Commit} foi mantido fora do escopo: não há
+\texttt{Prepare}/\texttt{Commit}/\texttt{Abort} nem operações atômicas em grupo. A
+coordenação de concorrência deste trabalho se dá exclusivamente pela \textbf{exclusão
+mútua} por objeto (Seção~\ref{sec:exclusao}).
